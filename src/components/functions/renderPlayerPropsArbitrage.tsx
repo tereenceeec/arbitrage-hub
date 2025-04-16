@@ -69,12 +69,14 @@ export const renderPlayerPropsArbitrageBets = (games: Game[]): JSX.Element => {
           if (
             odds1.over &&
             odds2.under &&
-            odds1.over.point === odds2.under.point && // ✅ Only match if line is the same
+            odds1.over.point !== undefined &&
+            odds2.under.point !== undefined &&
+            odds1.over.point <= odds2.under.point && // ✅ relaxed line condition
             checkArbitrage(odds1.over.price, odds2.under.price)
           ) {
             playerPropsArbitrage.push(
               <div
-                key={`${game.home_team}-${game.away_team}-${playerName}-${bk1}-${bk2}-${odds1.over.point}`}
+                key={`${game.home_team}-${game.away_team}-${playerName}-${bk1}-${bk2}-${odds1.over.point}-${odds2.under.point}`}
                 style={{
                   border: '1px solid #ccc',
                   padding: '1rem',
@@ -83,9 +85,9 @@ export const renderPlayerPropsArbitrageBets = (games: Game[]): JSX.Element => {
                 }}
               >
                 <strong>{game.home_team} vs {game.away_team}</strong><br />
-                <strong>{playerName}</strong> (Assists Market - Line: {odds1.over.point})<br />
-                {bk1} (Over): {odds1.over.price}<br />
-                {bk2} (Under): {odds2.under.price}<br />
+                <strong>{playerName}</strong> (Assists Market)<br />
+                {bk1} (Over): {odds1.over.price} (Line: {odds1.over.point})<br />
+                {bk2} (Under): {odds2.under.price} (Line: {odds2.under.point})<br />
                 <strong style={{ color: 'red' }}>Arbitrage Opportunity!</strong>
               </div>
             );

@@ -31,24 +31,115 @@ const H2hSpreadTotal = () => {
   const totalArbs = renderArbitrageBets(totalOdds, 'totals');
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
       <div style={{ width: '32%' }}>
         <h2>H2H Arbitrage</h2>
-        <ul>{h2hArbs.length ? h2hArbs : <li>No arbitrage found.</li>}</ul>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {h2hArbs.length ? (
+            h2hArbs.map((arb, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: '1rem',
+                  border: '1px solid #ccc',
+                  borderRadius: '8px',
+                  backgroundColor: '#f9f9f9',
+                }}
+              >
+                {arb}
+              </div>
+            ))
+          ) : (
+            <div style={{ gridColumn: 'span 2', padding: '1rem', textAlign: 'center' }}>
+              No arbitrage found.
+            </div>
+          )}
+        </div>
+  
         <h2>H2H Odds</h2>
-        {renderOdds(h2hOdds, 'h2h')}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {renderOdds(h2hOdds, 'h2h')}
+        </div>
       </div>
+  
+      {/* Vertical Divider */}
+      <div
+        style={{
+          width: '1px',
+          backgroundColor: 'black',  // Black line
+          height: 'auto',             // Ensure it spans the height of the parent
+          margin: '0 20px',           // Spacing between the sections
+        }}
+      />
+  
       <div style={{ width: '32%' }}>
         <h2>Spread Arbitrage</h2>
-        <ul>{spreadArbs.length ? spreadArbs : <li>No arbitrage found.</li>}</ul>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {spreadArbs.length ? (
+            spreadArbs.map((arb, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: '1rem',
+                  border: '1px solid #ccc',
+                  borderRadius: '8px',
+                  backgroundColor: '#f9f9f9',
+                }}
+              >
+                {arb}
+              </div>
+            ))
+          ) : (
+            <div style={{ gridColumn: 'span 2', padding: '1rem', textAlign: 'center' }}>
+              No arbitrage found.
+            </div>
+          )}
+        </div>
+  
         <h2>Spread Odds</h2>
-        {renderOdds(spreadOdds, 'spreads')}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {renderOdds(spreadOdds, 'spreads')}
+        </div>
       </div>
+  
+      {/* Vertical Divider */}
+      <div
+        style={{
+          width: '1px',
+          backgroundColor: 'black',  // Black line
+          height: 'auto',             // Ensure it spans the height of the parent
+          margin: '0 20px',           // Spacing between the sections
+        }}
+      />
+  
       <div style={{ width: '32%' }}>
         <h2>Total Arbitrage</h2>
-        <ul>{totalArbs.length ? totalArbs : <li>No arbitrage found.</li>}</ul>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {totalArbs.length ? (
+            totalArbs.map((arb, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: '1rem',
+                  border: '1px solid #ccc',
+                  borderRadius: '8px',
+                  backgroundColor: '#f9f9f9',
+                }}
+              >
+                {arb}
+              </div>
+            ))
+          ) : (
+            <div style={{ gridColumn: 'span 2', padding: '1rem', textAlign: 'center' }}>
+              No arbitrage found.
+            </div>
+          )}
+        </div>
+  
         <h2>Total Odds</h2>
-        {renderOdds(totalOdds, 'totals')}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {renderOdds(totalOdds, 'totals')}
+        </div>
       </div>
     </div>
   );
