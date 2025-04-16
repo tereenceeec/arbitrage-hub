@@ -5,6 +5,7 @@ const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/ev
 const API_KEY = [
   'b52a9454e4debad17c2d97210ef9e90c',
   'e5353f118308573f9d6e8af041131ffe',
+  '454e54ff8674e4ee4944ad3d6398d5c7',
 ];
 
 let currentKeyIndex = 0;

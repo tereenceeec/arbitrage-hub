@@ -88,7 +88,7 @@ export const renderPlayerPropsArbitrageBets = (games: Game[]): JSX.Element => {
                 <strong>{playerName}</strong> (Assists Market)<br />
                 {bk1} (Over): {odds1.over.price} (Line: {odds1.over.point})<br />
                 {bk2} (Under): {odds2.under.price} (Line: {odds2.under.point})<br />
-                <strong style={{ color: 'red' }}>Arbitrage Opportunity!</strong>
+                <strong style={{ color: 'red' }}>Arbitrage!</strong>
               </div>
             );
           }
@@ -102,7 +102,7 @@ export const renderPlayerPropsArbitrageBets = (games: Game[]): JSX.Element => {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(1, 1fr)',
         gap: '20px',
         padding: '20px',
       }}
