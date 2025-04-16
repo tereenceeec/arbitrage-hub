@@ -15,7 +15,6 @@ const PlayerPropsAssists = () => {
         const propsData = await Promise.all(propPromises);
 
         setPlayerProps(propsData);
-        console.log('All player props:', propsData);
       } catch (error) {
         console.error('Failed to fetch player props:', error);
       }
