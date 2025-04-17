@@ -8,9 +8,12 @@ import H2hSpreadTotal from '../pages/h2hSpreadTotal';
 import PlayerPropsRebounds from '../pages/playerPropsRebounds';
 import PlayerPropsPoints from '../pages/playerPropsPoints';
 import Login from './ui/login';
+import { useNavigate } from 'react-router-dom';
+
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -20,6 +23,7 @@ const App = () => {
   const handleLogin = () => {
     localStorage.setItem('isLoggedIn', 'true');
     setIsLoggedIn(true);
+    navigate('/');
   };
 
   const handleLogout = () => {
