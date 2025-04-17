@@ -4,15 +4,17 @@ import H2hSpreadTotal from '../pages/h2hSpreadTotal';
 import PlayerPropsRebounds from '../pages/playerPropsRebounds';
 import PlayerPropsPoints from '../pages/playerPropsPoints';
 import { Box, Flex, Button, Spacer } from '@chakra-ui/react';
-import { Routes, Route, Link as RouterLink } from 'react-router-dom';
+import { Routes, Link as RouterLink } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 const App = () => {
+  <Router basename="/arbitrage-betting"></Router>
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'H2H - Spreads - Totals', path: '/h2h-spread-total' },
-    { name: 'Player Props - Assists', path: '/player-props-assists' },
-    { name: 'Player Props - Rebounds', path: '/player-props-rebounds' },
-    { name: 'Player Props - Points', path: '/player-props-points' }
+    { name: 'Home', path: '/arbitrage-betting/' },
+    { name: 'H2H - Spreads - Totals', path: '/arbitrage-betting/h2h-spread-total' },
+    { name: 'Player Props - Assists', path: '/arbitrage-betting/player-props-assists' },
+    { name: 'Player Props - Rebounds', path: '/arbitrage-betting/player-props-rebounds' },
+    { name: 'Player Props - Points', path: '/arbitrage-betting/player-props-points' }
   ];
 
   return (
@@ -76,11 +78,11 @@ const App = () => {
 
       {/* Routes */}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/h2h-spread-total" element={<H2hSpreadTotal />} />
-        <Route path="/player-props-assists" element={<PlayerPropsAssists />} />
-        <Route path="/player-props-rebounds" element={<PlayerPropsRebounds />} />
-        <Route path="/player-props-points" element={<PlayerPropsPoints />} />
+        <Route path="/arbitrage-betting/" element={<Home />} />
+        <Route path="/arbitrage-betting/h2h-spread-total" element={<H2hSpreadTotal />} />
+        <Route path="/arbitrage-betting/player-props-assists" element={<PlayerPropsAssists />} />
+        <Route path="/arbitrage-betting/player-props-rebounds" element={<PlayerPropsRebounds />} />
+        <Route path="/arbitrage-betting/player-props-points" element={<PlayerPropsPoints />} />
       </Routes>
     </Box>
   );
