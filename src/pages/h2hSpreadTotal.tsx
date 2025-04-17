@@ -1,7 +1,8 @@
-import React, { JSX, useEffect, useState } from 'react';
-import { fetchH2HOdds, fetchSpreadOdds, fetchTotalOdds, fetchGameIds } from '../api';
+import React, { useEffect, useState } from 'react';
+import { fetchH2HOdds, fetchSpreadOdds, fetchTotalOdds } from '../api';
 import { renderArbitrageBets, Game } from '../components/functions/renderArbitrageBets';
 import { renderOdds } from '../components/functions/renderOdds';
+import { Box, Heading, Divider, Flex } from '@chakra-ui/react';
 
 const H2hSpreadTotal = () => {
   const [h2hOdds, setH2HOdds] = useState<Game[]>([]);
@@ -24,124 +25,58 @@ const H2hSpreadTotal = () => {
     };
 
     getOdds();
-  }, []); 
+  }, []);
 
   const h2hArbs = renderArbitrageBets(h2hOdds, 'h2h');
   const spreadArbs = renderArbitrageBets(spreadOdds, 'spreads');
   const totalArbs = renderArbitrageBets(totalOdds, 'totals');
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-      <div style={{ width: '32%' }}>
-        <h2>H2H Arbitrage</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '20px' }}>
-          {h2hArbs.length ? (
-            h2hArbs.map((arb, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: '1rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  backgroundColor: '#f9f9f9',
-                }}
+    <Flex gap={6} justify="space-between" w="100%">
+      {/* Section Template */}
+      {[
+        { label: 'H2H', arbs: h2hArbs, odds: h2hOdds, key: 'h2h' },
+        { label: 'Spread', arbs: spreadArbs, odds: spreadOdds, key: 'spreads' },
+        { label: 'Total', arbs: totalArbs, odds: totalOdds, key: 'totals' },
+      ].map(({ label, arbs, odds, key }) => (
+        <Box key={key} w="33%">
+          <Heading as="h2" size="md" mb={3} color="teal.800">
+            {label} Arbitrage
+          </Heading>
+          <Flex direction="column" gap={4} mb={6}>
+            {arbs.length ? (
+              arbs.map((arb, index) => (
+                <Box
+                  key={index}
+                >
+                  {arb}
+                </Box>
+              ))
+            ) : (
+              <Box
+                p={4}
+                textAlign="center"
+                border="1px dashed"
+                borderColor="gray.300"
+                borderRadius="md"
+                color="gray.500"
               >
-                {arb}
-              </div>
-            ))
-          ) : (
-            <div style={{ gridColumn: 'span 2', padding: '1rem', textAlign: 'center' }}>
-              No arbitrage found.
-            </div>
-          )}
-        </div>
-  
-        <h2>H2H Odds</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '20px' }}>
-          {renderOdds(h2hOdds, 'h2h')}
-        </div>
-      </div>
-  
-      {/* Vertical Divider */}
-      <div
-        style={{
-          width: '1px',
-          backgroundColor: 'black',  // Black line
-          height: 'auto',             // Ensure it spans the height of the parent
-          margin: '0 20px',           // Spacing between the sections
-        }}
-      />
-  
-      <div style={{ width: '32%' }}>
-        <h2>Spread Arbitrage</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '20px' }}>
-          {spreadArbs.length ? (
-            spreadArbs.map((arb, index) => (
-              <div
-                key={index}
-                style={{
-                  border: '1px solid #ccc',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                }}
-              >
-                {arb}
-              </div>
-            ))
-          ) : (
-            <div style={{ gridColumn: 'span 2', padding: '1rem', textAlign: 'center' }}>
-              No arbitrage found.
-            </div>
-          )}
-        </div>
-  
-        <h2>Spread Odds</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '20px' }}>
-          {renderOdds(spreadOdds, 'spreads')}
-        </div>
-      </div>
-  
-      {/* Vertical Divider */}
-      <div
-        style={{
-          width: '1px',
-          backgroundColor: 'black',  // Black line
-          height: 'auto',             // Ensure it spans the height of the parent
-          margin: '0 20px',           // Spacing between the sections
-        }}
-      />
-  
-      <div style={{ width: '32%' }}>
-        <h2>Total Arbitrage</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '20px' }}>
-          {totalArbs.length ? (
-            totalArbs.map((arb, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: '1rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  backgroundColor: '#f9f9f9',
-                }}
-              >
-                {arb}
-              </div>
-            ))
-          ) : (
-            <div style={{ gridColumn: 'span 2', padding: '1rem', textAlign: 'center' }}>
-              No arbitrage found.
-            </div>
-          )}
-        </div>
-  
-        <h2>Total Odds</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '20px' }}>
-          {renderOdds(totalOdds, 'totals')}
-        </div>
-      </div>
-    </div>
+                No arbitrage found.
+              </Box>
+            )}
+          </Flex>
+
+          <Divider borderColor="teal.300" mb={4} />
+
+          <Heading as="h2" size="md" mb={3} color="teal.800">
+            {label} Odds
+          </Heading>
+          <Flex direction="column" gap={4}>
+            {renderOdds(odds, key)}
+          </Flex>
+        </Box>
+      ))}
+    </Flex>
   );
 };
 

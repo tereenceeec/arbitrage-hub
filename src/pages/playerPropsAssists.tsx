@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { fetchGameIds, fetchPlayerPropsForGame } from '../api';
-import { renderPlayerPropsArbitrageBets } from '../components/functions/renderPlayerPropsArbitrage';
+import {
+  Box,
+  Grid,
+  GridItem,
+  Heading,
+  Text,
+  Spinner,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { fetchGameIds, fetchPlayerPropsAssists } from '../api';
+import { renderArbitrageAssists } from '../components/functions/renderArbitrageAssists';
 
 const PlayerPropsAssists = () => {
   const [playerProps, setPlayerProps] = useState<any[]>([]);
@@ -9,11 +18,8 @@ const PlayerPropsAssists = () => {
     const loadPlayerProps = async () => {
       try {
         const ids = await fetchGameIds();
-
-        // Fetch all player props in parallel for each game
-        const propPromises = ids.map((id) => fetchPlayerPropsForGame(id));
+        const propPromises = ids.map((id) => fetchPlayerPropsAssists(id));
         const propsData = await Promise.all(propPromises);
-
         setPlayerProps(propsData);
       } catch (error) {
         console.error('Failed to fetch player props:', error);
@@ -23,11 +29,9 @@ const PlayerPropsAssists = () => {
     loadPlayerProps();
   }, []);
 
-
   const renderPlayerProps = (game: any) => {
     const playerData: { [key: string]: any } = {};
 
-    // Organize data by player
     game.bookmakers?.forEach((bookmaker: any) => {
       bookmaker.markets.forEach((market: any) => {
         if (market.key === 'player_assists') {
@@ -42,7 +46,6 @@ const PlayerPropsAssists = () => {
               };
             }
 
-            // Store the over and under prices
             if (outcome.name === 'Over') {
               playerData[outcome.description][bookmaker.title].over = {
                 price: outcome.price,
@@ -60,69 +63,76 @@ const PlayerPropsAssists = () => {
     });
 
     return Object.keys(playerData).map((playerName) => (
-      <div key={playerName} style={{ marginBottom: '1rem', padding: '1rem'}}>
-        <h4>{playerName}</h4>
+      <Box key={playerName} mb={4} p={4} bg="gray.50">
+        <Heading size="lg" mb={2} fontWeight="bold" color="teal.500">
+          {playerName}
+        </Heading>
         {Object.keys(playerData[playerName]).map((bookmakerName, index) => (
-          <div key={index} style={{ marginBottom: '10px' }}>
-            <strong>{bookmakerName}</strong>
-            <ul>
-              <li>
-                Over: {playerData[playerName][bookmakerName].over?.price} (Assists: {playerData[playerName][bookmakerName].over?.points})
-              </li>
-              <li>
-                Under: {playerData[playerName][bookmakerName].under?.price} (Assists: {playerData[playerName][bookmakerName].under?.points})
-              </li>
-            </ul>
-          </div>
+          <Box key={index} mb={4}>
+            <Text fontWeight="bold" fontSize="lg" color="blue.600">
+              {bookmakerName}
+            </Text>
+            <Box pl={5}>
+              <Text mb={2} fontSize="sm">
+                <strong>Over:</strong> {playerData[playerName][bookmakerName].over?.price} (Assists: {playerData[playerName][bookmakerName].over?.points})
+              </Text>
+              <Text fontSize="sm">
+                <strong>Under:</strong> {playerData[playerName][bookmakerName].under?.price} (Assists: {playerData[playerName][bookmakerName].under?.points})
+              </Text>
+            </Box>
+          </Box>
         ))}
-      </div>
+      </Box>
     ));
   };
 
   return (
-    <div>
-      <h2>Player Props - Assists</h2>
-      <h3>Arbitrage</h3>
-      
-      {/* Render Player Props Arbitrage Bets */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-        {renderPlayerPropsArbitrageBets(playerProps) ? (
-          renderPlayerPropsArbitrageBets(playerProps)
+    <Box p={4}>
+      <Heading mb={4}>Player Props - Assists</Heading>
+
+      <Heading size="md" mb={2}>
+        Arbitrage
+      </Heading>
+
+      <Grid templateColumns="repeat(1, 1fr)" gap={4} mb={6}>
+        {renderArbitrageAssists(playerProps) ? (
+          renderArbitrageAssists(playerProps)
         ) : (
-          <p>No arbitrage opportunities found.</p>
+          <Text>No arbitrage opportunities found.</Text>
         )}
-      </div>
-  
-      {/* If playerProps is empty, show loading message */}
+      </Grid>
+
       {playerProps.length === 0 ? (
-        <p>Loading...</p>
+        <Spinner size="xl" thickness="4px" color="teal.500" />
       ) : (
         playerProps.map((game, index) => (
-          <div key={index} style={{ marginBottom: '1rem' }}>
-            <h3>{game.home_team} vs {game.away_team}</h3>
-  
-            {/* Render Player Props for each game, ensuring only one box around each prop */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+          <Box key={index} mb={10}>
+            <Heading size="md" mb={4}>
+              {game.home_team} vs {game.away_team}
+            </Heading>
+
+            <Grid templateColumns="repeat(4, 1fr)" gap={4}>
               {renderPlayerProps(game).map((prop, idx) => (
-                <div key={idx} style={{
-                  border: '1px solid #ccc',   // Box for each player prop
-                  padding: '0.5rem',           // Padding inside the box
-                  borderRadius: '8px',         // Rounded corners for the prop box
-                  backgroundColor: '#f9f9f9',  // Light background for the prop box
-                  display: 'flex',             // Flex to center content
-                  justifyContent: 'center',    // Center content horizontally
-                  alignItems: 'center'         // Center content vertically
-                }}>
+                <GridItem
+                  key={idx}
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  boxShadow="sm"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
                   {prop}
-                </div>
+                </GridItem>
               ))}
-            </div>
-          </div>
+            </Grid>
+          </Box>
         ))
       )}
-    </div>
+    </Box>
   );
-  
 };
 
 export default PlayerPropsAssists;

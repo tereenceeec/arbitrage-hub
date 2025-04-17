@@ -1,4 +1,5 @@
 import React, { JSX } from 'react';
+import { Box, Text, UnorderedList, ListItem } from '@chakra-ui/react';
 
 export interface Outcome {
   name: string;
@@ -28,34 +29,39 @@ const extractMarket = (markets: Market[], key: string) =>
 
 export const renderOdds = (games: Game[], marketKey: string): JSX.Element[] => {
   return games.map(game => (
-    <div key={`${game.home_team}-${game.away_team}-${marketKey}`}
-         style={{
-           border: '1px solid #ccc',  // Box border
-           padding: '1rem',           // Padding inside the box
-           marginBottom: '1.5em',     // Space between matches
-           borderRadius: '8px',       // Rounded corners for the box
-           backgroundColor: '#f9f9f9' // Light background color
-         }}>
-      <h3 style={{ marginBottom: '1rem' }}>{game.home_team} vs {game.away_team}</h3>
-      <ul style={{ paddingLeft: '20px', listStyle: 'none', margin: 0 }}>
+    <Box
+      key={`${game.home_team}-${game.away_team}-${marketKey}`}
+      borderWidth="1px"
+      borderRadius="md"
+      p={4}
+      mb={6}
+      bg="gray.50"
+      boxShadow="md"
+    >
+      <Text fontSize="xl" fontWeight="bold" mb={4} color="teal.500">
+        {game.home_team} vs {game.away_team}
+      </Text>
+      <UnorderedList pl={5} styleType="none" m={0}>
         {game.bookmakers.map(b => {
           const market = extractMarket(b.markets, marketKey);
           if (!market) return null;
           return (
-            <li key={`${b.key}-${marketKey}`} style={{ marginBottom: '1em' }}>
-              <strong>{b.title}</strong>
-              <ul>
+            <ListItem key={`${b.key}-${marketKey}`} mb={4}>
+              <Text fontWeight="semibold" color="blue.600">{b.title}</Text>
+              <UnorderedList listStyleType="unset">
                 {market.outcomes.map(outcome => (
-                  <li key={outcome.name}>
-                    {outcome.name}: {outcome.price}
-                    {outcome.point !== undefined ? ` (Points: ${outcome.point})` : ''}
-                  </li>
+                  <ListItem key={outcome.name}>
+                    <Text color="gray.700">
+                      <strong>{outcome.name}: </strong>{outcome.price}
+                      {outcome.point !== undefined ? ` (Points: ${outcome.point})` : ''}
+                    </Text>
+                  </ListItem>
                 ))}
-              </ul>
-            </li>
+              </UnorderedList>
+            </ListItem>
           );
         })}
-      </ul>
-    </div>
+      </UnorderedList>
+    </Box>
   ));
 };

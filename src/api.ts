@@ -6,6 +6,8 @@ const API_KEY = [
   'b52a9454e4debad17c2d97210ef9e90c',
   'e5353f118308573f9d6e8af041131ffe',
   '454e54ff8674e4ee4944ad3d6398d5c7',
+  '3a150273e700425461b272f525879a27',
+  '296097ed38f27f86c4a02719eb317b1c'
 ];
 
 let currentKeyIndex = 0;
@@ -85,7 +87,7 @@ export const fetchGameIds = async (): Promise<string[]> => {
   }
 };
 
-export const fetchPlayerPropsForGame = async (gameId: string): Promise<any> => {
+export const fetchPlayerPropsAssists = async (gameId: string): Promise<any> => {
   try {
     const res = await fetch(
       `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=player_assists`
@@ -94,7 +96,45 @@ export const fetchPlayerPropsForGame = async (gameId: string): Promise<any> => {
     if (res.status === 401) {
       currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
       console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
-      return fetchPlayerPropsForGame(gameId);
+      return fetchPlayerPropsAssists(gameId);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching player props:', error);
+    throw error;
+  }
+};
+
+export const fetchPlayerPropsRebounds = async (gameId: string): Promise<any> => {
+  try {
+    const res = await fetch(
+      `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=player_rebounds`
+    );
+
+    if (res.status === 401) {
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
+      console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
+      return fetchPlayerPropsRebounds(gameId);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching player props:', error);
+    throw error;
+  }
+};
+
+export const fetchPlayerPropsPoints = async (gameId: string): Promise<any> => {
+  try {
+    const res = await fetch(
+      `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=player_points`
+    );
+
+    if (res.status === 401) {
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
+      console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
+      return fetchPlayerPropsPoints(gameId);
     }
 
     return await res.json();
