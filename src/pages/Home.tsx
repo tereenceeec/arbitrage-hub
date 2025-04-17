@@ -1,8 +1,11 @@
-import { Box, Heading, Text, List, ListItem, OrderedList, Button } from '@chakra-ui/react';
+import { Box, Heading, Text, List, ListItem, OrderedList, Button, Flex } from '@chakra-ui/react';
+import ArbitrageCalculator from '../components/ui/arbitrageCalculator';
 
 const Home = () => {
   return (
-    <Box p={4} bg="gray.50" borderRadius="md" boxShadow="lg">
+    <Flex >
+      <ArbitrageCalculator/>
+    <Flex p={4} bg="gray.50" borderRadius="md" boxShadow="lg" flexDirection='column'>
       {/* Page Title */}
       <Heading as="h2" size="xl" mb={4} color="teal.800" fontWeight="bold">
         Welcome to the NBA Betting Arbitrage Tool!
@@ -79,8 +82,9 @@ const Home = () => {
         }}
       >
         Start Finding Arbitrage Bets Now!
-      </Button>
-    </Box>
+      </Button>      
+    </Flex>   
+    </Flex>
   );
 };
 
