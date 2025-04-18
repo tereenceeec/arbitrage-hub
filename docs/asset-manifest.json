@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/arbitrage-betting/static/js/main.37c562af.js",
+    "main.js": "/arbitrage-betting/static/js/main.fe45e663.js",
     "index.html": "/arbitrage-betting/index.html",
-    "main.37c562af.js.map": "/arbitrage-betting/static/js/main.37c562af.js.map"
+    "main.fe45e663.js.map": "/arbitrage-betting/static/js/main.fe45e663.js.map"
   },
   "entrypoints": [
-    "static/js/main.37c562af.js"
+    "static/js/main.fe45e663.js"
   ]
 }
