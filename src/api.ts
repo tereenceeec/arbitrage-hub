@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_ODDS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds/';
-const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events/';
+const API_ODDS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds';
+const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events';
 const API_KEY = [
   'b52a9454e4debad17c2d97210ef9e90c',
   'e5353f118308573f9d6e8af041131ffe',
@@ -26,57 +26,76 @@ const handle401 = async (originalFunction: () => Promise<any>) => {
   return originalFunction();
 };
 
-export const fetchH2HOdds = async () => {
+const fetchOdds = async (markets: string): Promise<any> => {
   try {
     const response = await axios.get(API_ODDS_URL, {
       params: {
         regions: 'au',
-        markets: 'h2h',
+        markets,
         apiKey: API_KEY[currentKeyIndex],
       },
     });
     return response.data;
   } catch (error: any) {
-    if (error.response?.status === 401) return handle401(fetchH2HOdds);
-    console.error('Error fetching odds:', error);
+    if (error.response?.status === 401) return handle401(() => fetchOdds(markets));
+    console.error(`Error fetching odds for ${markets}:`, error);
     throw error;
   }
 };
 
-export const fetchSpreadOdds = async () => {
+export const fetchH2HOdds = () => fetchOdds('h2h');
+export const fetchSpreadOdds = () => fetchOdds('spreads');
+export const fetchTotalOdds = () => fetchOdds('totals');
+
+// Fetch totals market
+export const fetchTotals = async (): Promise<any> => {
+  return fetchOdds('totals');
+};
+
+// Fetch alternate totals market
+export const fetchAlternateTotals = async (eventIds: string[]): Promise<any[]> => {
   try {
-    const response = await axios.get(API_ODDS_URL, {
-      params: {
-        regions: 'au',
-        markets: 'spreads',
-        apiKey: API_KEY[currentKeyIndex],
-      },
-    });
-    return response.data;
+    const requests = eventIds.map(id =>
+      axios.get(`https://api.the-odds-api.com/v4/sports/basketball_nba/events/${id}/odds`, {
+        params: {
+          regions: 'au',
+          markets: 'alternate_totals',  // Request alternate totals
+          apiKey: API_KEY[currentKeyIndex],
+        },
+      })
+    );
+    const responses = await Promise.all(requests);
+    return responses.map(res => res.data);
   } catch (error: any) {
-    if (error.response?.status === 401) return handle401(fetchSpreadOdds);
-    console.error('Error fetching odds:', error);
-    throw error;
+    if (error.response?.status === 401) return handle401(() => fetchAlternateTotals(eventIds));
+    console.error('Error fetching alternate totals:', error);
+    return [];
   }
 };
 
-export const fetchTotalOdds = async () => {
+// Fetch alternate spreads market
+export const fetchAlternateSpreads = async (eventIds: string[]): Promise<any[]> => {
   try {
-    const response = await axios.get(API_ODDS_URL, {
-      params: {
-        regions: 'au',
-        markets: 'totals',
-        apiKey: API_KEY[currentKeyIndex],
-      },
-    });
-    return response.data;
+    const requests = eventIds.map(id =>
+      axios.get(`https://api.the-odds-api.com/v4/sports/basketball_nba/events/${id}/odds`, {
+        params: {
+          regions: 'au',
+          markets: 'alternate_spreads',  // Request alternate spreads
+          apiKey: API_KEY[currentKeyIndex],
+        },
+      })
+    );
+    const responses = await Promise.all(requests);
+    return responses.map(res => res.data);
   } catch (error: any) {
-    if (error.response?.status === 401) return handle401(fetchTotalOdds);
-    console.error('Error fetching odds:', error);
-    throw error;
+    if (error.response?.status === 401) return handle401(() => fetchAlternateSpreads(eventIds));
+    console.error('Error fetching alternate spreads:', error);
+    return [];
   }
 };
 
+
+// Fetch game IDs
 export const fetchGameIds = async (): Promise<string[]> => {
   try {
     const response = await axios.get(API_EVENTS_URL, {
@@ -95,59 +114,26 @@ export const fetchGameIds = async (): Promise<string[]> => {
   }
 };
 
-export const fetchPlayerPropsAssists = async (gameId: string): Promise<any> => {
+// Fetch player props (assists, rebounds, points)
+const fetchPlayerProps = async (gameId: string, market: string): Promise<any> => {
   try {
     const res = await fetch(
-      `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=player_assists`
+      `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=${market}`
     );
 
     if (res.status === 401) {
       currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
       console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
-      return fetchPlayerPropsAssists(gameId);
+      return fetchPlayerProps(gameId, market);
     }
 
     return await res.json();
   } catch (error) {
-    console.error('Error fetching player props:', error);
+    console.error(`Error fetching player props for ${market}:`, error);
     throw error;
   }
 };
 
-export const fetchPlayerPropsRebounds = async (gameId: string): Promise<any> => {
-  try {
-    const res = await fetch(
-      `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=player_rebounds`
-    );
-
-    if (res.status === 401) {
-      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
-      console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
-      return fetchPlayerPropsRebounds(gameId);
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error('Error fetching player props:', error);
-    throw error;
-  }
-};
-
-export const fetchPlayerPropsPoints = async (gameId: string): Promise<any> => {
-  try {
-    const res = await fetch(
-      `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=player_points`
-    );
-
-    if (res.status === 401) {
-      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
-      console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
-      return fetchPlayerPropsPoints(gameId);
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error('Error fetching player props:', error);
-    throw error;
-  }
-};
+export const fetchPlayerPropsAssists = (gameId: string) => fetchPlayerProps(gameId, 'player_assists');
+export const fetchPlayerPropsRebounds = (gameId: string) => fetchPlayerProps(gameId, 'player_rebounds');
+export const fetchPlayerPropsPoints = (gameId: string) => fetchPlayerProps(gameId, 'player_points');

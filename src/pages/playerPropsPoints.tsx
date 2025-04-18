@@ -85,6 +85,7 @@ const PlayerPropsPoints = () => {
       </Box>
     ));
   };
+  const bgColor = useColorModeValue('gray.50', 'gray.700');
 
   return (
     <Box p={4}>
@@ -118,7 +119,7 @@ const PlayerPropsPoints = () => {
                   p={4}
                   borderWidth="1px"
                   borderRadius="md"
-                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  bg={bgColor}
                   boxShadow="sm"
                 >
                   {prop}
