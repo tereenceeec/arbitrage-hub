@@ -122,9 +122,6 @@ const PlayerPropsAssists = () => {
                   borderRadius="md"
                   bg={bgColor}
                   boxShadow="sm"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
                 >
                   {prop}
                 </GridItem>

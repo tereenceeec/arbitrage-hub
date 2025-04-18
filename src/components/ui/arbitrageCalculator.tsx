@@ -4,7 +4,6 @@ import {
   FormControl,
   FormLabel,
   VStack,
-  Heading,
   Text,
   Input,
   useColorModeValue,
@@ -44,10 +43,6 @@ const ArbitrageCalculator = () => {
       borderRadius="2xl"
     >
       <VStack spacing={6} align="stretch">
-        <Heading size="lg" textAlign="center" color="teal.600">
-          Arbitrage Calculator
-        </Heading>
-
         <FormControl>
           <FormLabel>Odds for Side A</FormLabel>
           <Input

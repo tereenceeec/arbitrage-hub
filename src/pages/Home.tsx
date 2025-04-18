@@ -47,6 +47,7 @@ const Home = () => {
           boxShadow="md"
           width="100%"
           maxWidth={isMobile ? "100%" : "500px"}
+          textAlign='center'
         >
           <Heading size="lg" color="teal.700" mb={4}>
             Arbitrage Calculator

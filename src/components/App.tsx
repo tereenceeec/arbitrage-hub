@@ -5,6 +5,7 @@ import {
   Button,
   Spacer,
   Text,
+  Image,
   VStack,
   useBreakpointValue,
   IconButton,
@@ -15,7 +16,13 @@ import {
   DrawerBody,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Routes, Route, Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Link as RouterLink,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import Home from "../pages/Home";
 import PlayerPropsAssists from "../pages/playerPropsAssists";
@@ -92,18 +99,39 @@ const App = () => {
       <Box
         bgGradient="linear(to-r, teal.800, teal.500)"
         color="white"
-        p={4}
-        textAlign="center"
+        p={6}
         borderRadius="md"
         mb={6}
         boxShadow="lg"
       >
-        <Text fontSize="xl" fontWeight="bold">
-          Welcome to Arbitrage Betting!
-        </Text>
-        <Text fontSize="md" mt={2}>
-          Find the best betting opportunities with ease. Maximize your profits by leveraging arbitrage betting.
-        </Text>
+        <Flex
+          align="center"
+          justify="center"
+          direction={{ base: "column", md: "row" }}
+          gap={6}
+          textAlign={{ base: "center", md: "left" }}
+        >
+          <Box mr='auto' ml={['auto', 'unset']}>
+          <Image
+            src="/arbitrage-betting/images/abt-logo-colour.png"
+            alt="ABT Logo"
+            maxW="80px"
+            borderRadius="lg"
+            boxShadow="md"
+            
+            
+          />
+          </Box>
+          <Box w='100%' textAlign='center'>
+            <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
+              Welcome to Arbitrage Betting!
+            </Text>
+            <Text fontSize={{ base: "sm", md: "md" }} mt={2}>
+              Find the best betting opportunities with ease. Maximize your
+              profits by leveraging arbitrage betting.
+            </Text>
+          </Box>
+        </Flex>
       </Box>
 
       {/* Navigation Bar with Gradient */}
@@ -149,7 +177,11 @@ const App = () => {
                         {name}
                       </Button>
                     ))}
-                    <Button colorScheme="red" variant="solid" onClick={handleLogout}>
+                    <Button
+                      colorScheme="red"
+                      variant="solid"
+                      onClick={handleLogout}
+                    >
                       Log Out
                     </Button>
                   </VStack>
@@ -187,7 +219,10 @@ const App = () => {
             <Flex align="center" gap={4}>
               {username && (
                 <Box color="white" fontWeight="bold" mr={2}>
-                  Logged in as: <Text as="span" color="teal.200">{username}</Text>
+                  Logged in as:{" "}
+                  <Text as="span" color="teal.200">
+                    {username}
+                  </Text>
                 </Box>
               )}
               <Button
@@ -209,10 +244,22 @@ const App = () => {
       {/* Routes */}
       <Routes>
         <Route path="/arbitrage-betting/" element={<Home />} />
-        <Route path="/arbitrage-betting/h2h-spread-total" element={<H2hSpreadTotal />} />
-        <Route path="/arbitrage-betting/player-props-assists" element={<PlayerPropsAssists />} />
-        <Route path="/arbitrage-betting/player-props-rebounds" element={<PlayerPropsRebounds />} />
-        <Route path="/arbitrage-betting/player-props-points" element={<PlayerPropsPoints />} />
+        <Route
+          path="/arbitrage-betting/h2h-spread-total"
+          element={<H2hSpreadTotal />}
+        />
+        <Route
+          path="/arbitrage-betting/player-props-assists"
+          element={<PlayerPropsAssists />}
+        />
+        <Route
+          path="/arbitrage-betting/player-props-rebounds"
+          element={<PlayerPropsRebounds />}
+        />
+        <Route
+          path="/arbitrage-betting/player-props-points"
+          element={<PlayerPropsPoints />}
+        />
       </Routes>
     </Box>
   );
