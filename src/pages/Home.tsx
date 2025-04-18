@@ -9,138 +9,106 @@ import {
   Flex,
   VStack,
   useBreakpointValue,
+  Icon,
 } from "@chakra-ui/react";
+import { FiTrendingUp, FiZap } from "react-icons/fi";
+import { FaCalculator } from "react-icons/fa"; // Calculator icon from FontAwesome
 import ArbitrageCalculator from "../components/ui/arbitrageCalculator";
 
 const Home = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
-    <Flex direction="column" align="center" p={6} bg="gray.50" minH="100vh">
+    <Box bgGradient="linear(to-br, gray.50, teal.50)" minH="100vh" p={6}>
       {/* Header */}
-      <Box textAlign="center" mb={10} width="100%">
-        <Heading size="2xl" fontWeight="extrabold" color="teal.700" mb={4}>
-          NBA Betting Arbitrage Tool
+      <Box textAlign="center" mb={12}>
+        <Heading size="3xl" fontWeight="bold" color="teal.700" mb={4}>
+          🧠 NBA Arbitrage Hub
         </Heading>
         <Text fontSize="xl" color="gray.700" maxW="800px" mx="auto">
-          Discover profitable betting opportunities across bookmakers. Use our
-          real-time arbitrage detection and calculator to lock in guaranteed
-          profits.
+          Discover real-time arbitrage opportunities, calculate guaranteed
+          profits, and make smarter NBA bets across multiple markets.
         </Text>
       </Box>
 
-      {/* Main Content */}
+      {/* Main Section */}
       <Flex
         direction={isMobile ? "column" : "row"}
-        gap={8}
-        width="100%"
+        gap={10}
         maxW="1200px"
+        mx="auto"
         align="start"
         justify="center"
       >
-        {/* Left - Calculator */}
-        <Box
-          flex="1"
-          bg="white"
-          p={6}
-          borderRadius="2xl"
-          boxShadow="md"
-          width="100%"
-          maxWidth={isMobile ? "100%" : "500px"}
-          textAlign='center'
-        >
-          <Heading size="lg" color="teal.700" mb={7}>
-            Arbitrage Calculator
-          </Heading>
-          <Text fontSize="md" mb={9} color="gray.600">
-            Enter odds and your total stake to calculate how much to bet on each
-            outcome for a guaranteed return.
-          </Text>
-          <ArbitrageCalculator />
-        </Box>
+        <ArbitrageCalculator />
 
-        {/* Right - Features and How It Works */}
-        <VStack
-          flex="1"
-          spacing={6}
-          align="stretch"
-          width="100%"
-          maxWidth={isMobile ? "100%" : "600px"}
-        >
-          {/* What You Can Do */}
-          <Box bg="white" p={6} borderRadius="2xl" boxShadow="md">
-            <Heading size="lg" color="teal.700" mb={4}>
-              What You Can Do
+        {/* Right: Info Panels */}
+        <VStack flex="1" spacing={8} align="stretch" maxW="600px" width="100%">
+          {/* Features Card */}
+          <Box p={6} bg="white" borderRadius="2xl" boxShadow="xl">
+            <Heading size="md" mb={4} color="teal.700">
+              <Flex align="center" gap={2}>
+                <Icon as={FiZap as any} />
+                What You Can Do
+              </Flex>
             </Heading>
             <List spacing={4} fontSize="md" color="gray.700">
               <ListItem>
-                ✅ <strong>Use Arbitrage Calculator:</strong> Calculate stake
-                splits and profits instantly.
+                ✅ <strong>Live Arbitrage Detection:</strong> Spot real-time
+                mismatches in odds.
               </ListItem>
               <ListItem>
-                ✅ <strong>Scan Arbitrage Opportunities:</strong> Find value
-                from odds differences in real time.
+                ✅ <strong>Calculator Tool:</strong> Auto-split stakes for
+                profit.
               </ListItem>
               <ListItem>
-                ✅ <strong>Full Market Coverage:</strong> Analyze:
-                <List pl={6} pt={2} spacing={1}>
-                  <ListItem>• H2H (Head-to-Head)</ListItem>
-                  <ListItem>• Spreads</ListItem>
-                  <ListItem>• Totals (Over/Under)</ListItem>
-                  <ListItem>
-                    • Player Props (Assists, Rebounds, Points)
-                  </ListItem>
-                </List>
+                ✅ <strong>Coverage:</strong> H2H, Spreads, Totals, Player
+                Props.
               </ListItem>
               <ListItem>
-                ✅ <strong>Live Odds Sync:</strong> Data updates constantly for
-                the latest betting edge.
+                ✅ <strong>Updated Odds:</strong> Data refreshes continuously.
               </ListItem>
             </List>
           </Box>
 
-          {/* How It Works */}
-          <Box bg="white" p={6} borderRadius="2xl" boxShadow="md">
-            <Heading size="lg" color="teal.700" mb={4}>
-              How Arbitrage Betting Works
+          {/* How It Works Card */}
+          <Box p={6} bg="white" borderRadius="2xl" boxShadow="xl">
+            <Heading size="md" mb={4} color="teal.700">
+              <Flex align="center" gap={2}>
+                <Icon as={FiTrendingUp as any} boxSize={5} />
+                How Arbitrage Betting Works
+              </Flex>
             </Heading>
             <Text fontSize="md" mb={4} color="gray.600">
-              Arbitrage betting lets you place bets on all outcomes with
-              different bookmakers to ensure a profit. Here’s how:
+              Place bets on all possible outcomes across different sportsbooks
+              for a no-risk profit.
             </Text>
-            <OrderedList spacing={3} color="gray.700" fontSize="md" mb={6}>
-              <ListItem>
-                Identify bookmakers offering opposite value on a market.
-              </ListItem>
-              <ListItem>
-                Calculate the implied probability from the odds.
-              </ListItem>
-              <ListItem>
-                Use the calculator to determine ideal bet amounts for each side.
-              </ListItem>
-              <ListItem>
-                Place both bets and lock in profit — regardless of outcome.
-              </ListItem>
+            <OrderedList spacing={3} fontSize="md" color="gray.700">
+              <ListItem>Find opposite value on different books.</ListItem>
+              <ListItem>Calculate implied probabilities from odds.</ListItem>
+              <ListItem>Use the calculator to split your stake.</ListItem>
+              <ListItem>Place both bets. Guaranteed profit.</ListItem>
             </OrderedList>
-            <Flex justify="center">
+
+            <Flex justify="center" mt={6}>
               <Button
+                as="a"
+                href="/arbitrage-betting/h2h-spread-total"
                 colorScheme="teal"
                 size="lg"
                 borderRadius="xl"
                 px={8}
                 py={6}
-                fontSize={{ base: "md", sm: "lg", md: "xl" }} // Responsive font size
+                fontWeight="bold"
                 _hover={{ boxShadow: "lg", transform: "scale(1.03)" }}
-                href="/arbitrage-betting/h2h-spread-total"
-                as="a"
               >
-                Explore Arbitrage Opportunities
+                🚀 Explore Opportunities
               </Button>
             </Flex>
           </Box>
         </VStack>
       </Flex>
-    </Flex>
+    </Box>
   );
 };
 

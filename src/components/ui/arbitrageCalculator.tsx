@@ -7,6 +7,14 @@ import {
   Text,
   Input,
   useColorModeValue,
+  Divider,
+  Heading,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  Fade,
+  SimpleGrid,
 } from '@chakra-ui/react';
 
 const ArbitrageCalculator = () => {
@@ -32,73 +40,101 @@ const ArbitrageCalculator = () => {
   const profitPercent = (profit / parsedStake) * 100;
 
   const bg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <Box
-      maxW="500px"
+      maxW="600px"
       w="100%"
       mx="auto"
       bg={bg}
-      p={5}
+      p={9}
       borderRadius="2xl"
+      boxShadow="lg"
+      borderWidth="1px"
+      borderColor={borderColor}
     >
       <VStack spacing={6} align="stretch">
-        <FormControl>
-          <FormLabel>Odds for Side A</FormLabel>
-          <Input
-            value={oddsA}
-            onChange={(e) => setOddsA(e.target.value)}
-            placeholder="e.g. 2.60"
-          />
-        </FormControl>
+        <Heading size="lg" textAlign="center">
+          🎯 Arbitrage Calculator
+        </Heading>
+
+        <Divider />
+
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+          <FormControl>
+            <FormLabel fontWeight="semibold">Odds for Side A</FormLabel>
+            <Input
+              type="number"
+              value={oddsA}
+              onChange={(e) => setOddsA(e.target.value)}
+              placeholder="e.g. 2.60"
+              focusBorderColor="teal.400"
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel fontWeight="semibold">Odds for Side B</FormLabel>
+            <Input
+              type="number"
+              value={oddsB}
+              onChange={(e) => setOddsB(e.target.value)}
+              placeholder="e.g. 1.90"
+              focusBorderColor="teal.400"
+            />
+          </FormControl>
+        </SimpleGrid>
 
         <FormControl>
-          <FormLabel>Odds for Side B</FormLabel>
+          <FormLabel fontWeight="semibold">Total Stake ($)</FormLabel>
           <Input
-            value={oddsB}
-            onChange={(e) => setOddsB(e.target.value)}
-            placeholder="e.g. 1.90"
-          />
-        </FormControl>
-
-        <FormControl>
-          <FormLabel>Total Stake</FormLabel>
-          <Input
+            type="number"
             value={stake}
             onChange={(e) => setStake(e.target.value)}
             placeholder="e.g. 1000"
+            focusBorderColor="teal.400"
           />
         </FormControl>
 
         {isValid && (
-          <>
+          <Fade in={true}>
             <Box mt={4}>
-              <Text fontSize="lg">
-                <strong>Bet on Side A:</strong> ${betA.toFixed(2)}
-              </Text>
-              <Text fontSize="md" color="gray.500" ml={4}>
-                Return: ${payoutA.toFixed(2)}
-              </Text>
+              <Heading size="md" mb={3}>
+                🧮 Bet Distribution
+              </Heading>
+              <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
+                <Stat>
+                  <StatLabel>Side A</StatLabel>
+                  <StatNumber>${betA.toFixed(2)}</StatNumber>
+                  <StatHelpText>Return: ${payoutA.toFixed(2)}</StatHelpText>
+                </Stat>
 
-              <Text fontSize="lg" mt={3}>
-                <strong>Bet on Side B:</strong> ${betB.toFixed(2)}
-              </Text>
-              <Text fontSize="md" color="gray.500" ml={4}>
-                Return: ${payoutB.toFixed(2)}
-              </Text>
-            </Box>
+                <Stat>
+                  <StatLabel>Side B</StatLabel>
+                  <StatNumber>${betB.toFixed(2)}</StatNumber>
+                  <StatHelpText>Return: ${payoutB.toFixed(2)}</StatHelpText>
+                </Stat>
+              </SimpleGrid>
 
-            <Box mt={2} p={4} borderRadius="md" bg={isArb ? 'green.50' : 'red.50'}>
-              <Text fontSize="md" color={isArb ? 'green.600' : 'red.600'}>
-                {isArb
-                  ? `✅ Arbitrage opportunity detected!`
-                  : `⚠️ No arbitrage – you'd lose money.`}
-              </Text>
-              <Text fontSize="lg" mt={1}>
-                Profit: <strong>${profit.toFixed(2)}</strong> ({profitPercent.toFixed(2)}%)
-              </Text>
+              <Box
+                mt={6}
+                p={5}
+                borderRadius="lg"
+                bg={isArb ? 'green.50' : 'red.50'}
+                border="1px solid"
+                borderColor={isArb ? 'green.300' : 'red.300'}
+              >
+                <Text fontSize="md" color={isArb ? 'green.600' : 'red.600'}>
+                  {isArb
+                    ? `✅ Arbitrage opportunity detected!`
+                    : `⚠️ No arbitrage — you'd lose money.`}
+                </Text>
+                <Text fontSize="xl" fontWeight="bold" mt={2}>
+                  Profit: ${profit.toFixed(2)} ({profitPercent.toFixed(2)}%)
+                </Text>
+              </Box>
             </Box>
-          </>
+          </Fade>
         )}
       </VStack>
     </Box>
