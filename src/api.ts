@@ -3,6 +3,10 @@ import axios from 'axios';
 const API_ODDS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds';
 const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events';
 const API_KEY = [
+  'f90f511bc98e64f919a5317db8c220dc',
+  'e237fae64b503a4d4d409eb00e230e68',
+  '239dae407857a2200fd9ab284c03aa6d',
+  'e34374422b34c4e7e898f89ca1cf8ef7',
   'b52a9454e4debad17c2d97210ef9e90c',
   'e5353f118308573f9d6e8af041131ffe',
   '454e54ff8674e4ee4944ad3d6398d5c7',
@@ -135,5 +139,14 @@ const fetchPlayerProps = async (gameId: string, market: string): Promise<any> =>
 };
 
 export const fetchPlayerPropsAssists = (gameId: string) => fetchPlayerProps(gameId, 'player_assists');
+export const fetchPlayerPropsAlternateAssists = (gameId: string) =>
+  fetchPlayerProps(gameId, 'player_assists_alternate');
+
 export const fetchPlayerPropsRebounds = (gameId: string) => fetchPlayerProps(gameId, 'player_rebounds');
+export const fetchPlayerPropsAlternateRebounds = (gameId: string) =>
+  fetchPlayerProps(gameId, 'player_rebounds_alternate');
+
 export const fetchPlayerPropsPoints = (gameId: string) => fetchPlayerProps(gameId, 'player_points');
+export const fetchPlayerPropsAlternatePoints = (gameId: string) =>
+  fetchPlayerProps(gameId, 'player_points_alternate');
+

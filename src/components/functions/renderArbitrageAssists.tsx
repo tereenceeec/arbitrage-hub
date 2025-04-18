@@ -5,7 +5,7 @@ interface Outcome {
   name: string;
   price: number;
   point?: number;
-  description: string; // Player name
+  description: string;
 }
 
 interface Market {
@@ -33,28 +33,31 @@ const checkArbitrage = (overOdds: number, underOdds: number) => {
   return probOver + probUnder < 1;
 };
 
-const extractPlayerAssists = (markets?: Market[]) =>
-  markets?.find((m) => m.key === 'player_assists');
-
 export const renderArbitrageAssists = (games: Game[]): JSX.Element => {
   const playerPropsArbitrage: JSX.Element[] = [];
 
+  const extractCombinedPlayerAssists = (markets?: Market[]) => {
+    const main = markets?.find((m) => m.key === 'player_assists')?.outcomes || [];
+    const alt = markets?.find((m) => m.key === 'player_assists_alternate')?.outcomes || [];
+    return [...main, ...alt];
+  };
+
   games.forEach((game) => {
-    const players: Record<string, Record<string, { over?: Outcome; under?: Outcome }>> = {};
+    const players: Record<string, Record<string, { overs: Outcome[]; unders: Outcome[] }>> = {};
 
     game.bookmakers.forEach((bookmaker) => {
-      const assistMarket = extractPlayerAssists(bookmaker.markets);
-      if (!assistMarket) return;
+      const combinedOutcomes = extractCombinedPlayerAssists(bookmaker.markets);
+      if (!combinedOutcomes.length) return;
 
-      assistMarket.outcomes.forEach((outcome) => {
+      combinedOutcomes.forEach((outcome) => {
         const playerName = outcome.description;
         if (!players[playerName]) players[playerName] = {};
-        if (!players[playerName][bookmaker.title]) players[playerName][bookmaker.title] = {};
+        if (!players[playerName][bookmaker.title]) players[playerName][bookmaker.title] = { overs: [], unders: [] };
 
         if (outcome.name === 'Over') {
-          players[playerName][bookmaker.title].over = outcome;
+          players[playerName][bookmaker.title].overs.push(outcome);
         } else if (outcome.name === 'Under') {
-          players[playerName][bookmaker.title].under = outcome;
+          players[playerName][bookmaker.title].unders.push(outcome);
         }
       });
     });
@@ -67,41 +70,43 @@ export const renderArbitrageAssists = (games: Game[]): JSX.Element => {
           if (i === j) continue;
           const [bk2, odds2] = bookmakers[j];
 
-          if (
-            odds1.over &&
-            odds2.under &&
-            odds1.over.point !== undefined &&
-            odds2.under.point !== undefined &&
-            odds1.over.point <= odds2.under.point &&
-            checkArbitrage(odds1.over.price, odds2.under.price)
-          ) {
-            playerPropsArbitrage.push(
-              <Box
-                key={`${game.home_team}-${game.away_team}-${playerName}-${bk1}-${bk2}-${odds1.over.point}-${odds2.under.point}`}
-                borderWidth="1px"
-                borderRadius="md"
-                p={4}
-                boxShadow="md"
-                bg="gray.50"
-              >
-                <Text fontWeight="bold" fontSize="lg" color="teal.500">
-                  {game.home_team} vs {game.away_team}
-                </Text>
-                <Text fontWeight="bold" fontSize="lg" color="blue.600">
-                  {playerName} (Assists Market)
-                </Text>
-                <Text fontSize="sm">
-                  <strong>{bk1} (Over):</strong> {odds1.over.price} (Line: {odds1.over.point})
-                </Text>
-                <Text fontSize="sm">
-                  <strong>{bk2} (Under):</strong> {odds2.under.price} (Line: {odds2.under.point})
-                </Text>
-                <Text fontWeight="bold" color="red.500">
-                  Arbitrage!
-                </Text>
-              </Box>
-            );
-          }
+          odds1.overs.forEach((over) => {
+            odds2.unders.forEach((under) => {
+              if (
+                over.point !== undefined &&
+                under.point !== undefined &&
+                over.point <= under.point &&
+                checkArbitrage(over.price, under.price)
+              ) {
+                playerPropsArbitrage.push(
+                  <Box
+                    key={`${game.home_team}-${game.away_team}-${playerName}-${bk1}-${bk2}-${over.point}-${under.point}-${over.price}-${under.price}`}
+                    borderWidth="1px"
+                    borderRadius="md"
+                    p={4}
+                    boxShadow="md"
+                    bg="gray.50"
+                  >
+                    <Text fontWeight="bold" fontSize="lg" color="teal.500">
+                      {game.home_team} vs {game.away_team}
+                    </Text>
+                    <Text fontWeight="bold" fontSize="lg" color="blue.600">
+                      {playerName} (Assists Market)
+                    </Text>
+                    <Text fontSize="sm">
+                      <strong>{bk1} (Over):</strong> {over.price} (Line: {over.point})
+                    </Text>
+                    <Text fontSize="sm">
+                      <strong>{bk2} (Under):</strong> {under.price} (Line: {under.point})
+                    </Text>
+                    <Text fontWeight="bold" color="red.500">
+                      Arbitrage!
+                    </Text>
+                  </Box>
+                );
+              }
+            });
+          });
         }
       }
     });

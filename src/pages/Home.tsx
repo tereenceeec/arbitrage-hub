@@ -49,10 +49,10 @@ const Home = () => {
           maxWidth={isMobile ? "100%" : "500px"}
           textAlign='center'
         >
-          <Heading size="lg" color="teal.700" mb={4}>
+          <Heading size="lg" color="teal.700" mb={7}>
             Arbitrage Calculator
           </Heading>
-          <Text fontSize="md" mb={4} color="gray.600">
+          <Text fontSize="md" mb={9} color="gray.600">
             Enter odds and your total stake to calculate how much to bet on each
             outcome for a guaranteed return.
           </Text>
