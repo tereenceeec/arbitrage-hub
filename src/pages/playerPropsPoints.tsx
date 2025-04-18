@@ -85,6 +85,7 @@ const PlayerPropsPoints = () => {
       </Box>
     ));
   };
+
   const bgColor = useColorModeValue('gray.50', 'gray.700');
 
   return (
@@ -95,7 +96,7 @@ const PlayerPropsPoints = () => {
         Arbitrage
       </Heading>
 
-      <Grid templateColumns="repeat(1, 1fr)" gap={4} mb={6}>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)' }} gap={4} mb={6}>
         {renderArbitragePoints(playerProps) ? (
           renderArbitragePoints(playerProps)
         ) : (
@@ -112,7 +113,7 @@ const PlayerPropsPoints = () => {
               {game.home_team} vs {game.away_team}
             </Heading>
 
-            <Grid templateColumns="repeat(4, 1fr)" gap={4}>
+            <Grid templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }} gap={4}>
               {renderPlayerProps(game).map((prop, idx) => (
                 <GridItem
                   key={idx}

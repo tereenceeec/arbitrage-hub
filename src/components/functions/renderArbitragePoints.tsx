@@ -91,10 +91,10 @@ export const renderArbitragePoints = (games: Game[]): JSX.Element => {
                   {playerName} (Points Market)
                 </Text>
                 <Text fontSize="sm">
-                <strong>{bk1} (Over): </strong> {odds1.over.price} (Line: {odds1.over.point})
+                  <strong>{bk1} (Over): </strong> {odds1.over.price} (Line: {odds1.over.point})
                 </Text>
                 <Text fontSize="sm">
-                <strong>{bk2} (Under): </strong> {odds2.under.price} (Line: {odds2.under.point})
+                  <strong>{bk2} (Under): </strong> {odds2.under.price} (Line: {odds2.under.point})
                 </Text>
                 <Text fontWeight="bold" color="red.500">
                   Arbitrage!
@@ -108,7 +108,7 @@ export const renderArbitragePoints = (games: Game[]): JSX.Element => {
   });
 
   return (
-    <Grid templateColumns="repeat(3, 1fr)" gap={5} p={5}>
+    <Grid templateColumns={{ base: '1fr', sm: '1fr', md: 'repeat(3, 1fr)' }} gap={5} py={5}>
       {playerPropsArbitrage.length > 0 ? (
         playerPropsArbitrage
       ) : (
@@ -125,5 +125,4 @@ export const renderArbitragePoints = (games: Game[]): JSX.Element => {
       )}
     </Grid>
   );
-  
 };

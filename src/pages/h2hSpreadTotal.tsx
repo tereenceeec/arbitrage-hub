@@ -10,7 +10,7 @@ import {
 
 import { renderArbitrageBets, Game } from '../components/functions/renderArbitrageBets';
 import { renderOdds } from '../components/functions/renderOdds';
-import { Box, Heading, Divider, Flex } from '@chakra-ui/react';
+import { Box, Heading, Divider, Flex, Grid } from '@chakra-ui/react';
 
 const H2hSpreadTotal = () => {
   const [h2hOdds, setH2HOdds] = useState<Game[]>([]);
@@ -51,17 +51,19 @@ const H2hSpreadTotal = () => {
   const totalArbs = renderArbitrageBets(combinedTotals, 'totals');     // Arbitrage from full totals
 
   return (
-    <Flex gap={6} justify="space-between" w="100%">
-      {[{ label: 'H2H', arbs: h2hArbs, odds: h2hOdds, key: 'h2h' },
-        { label: 'Spread', arbs: spreadArbs, odds: spreadOdds, key: 'spreads' },
-        { label: 'Total', arbs: totalArbs, odds: totalOdds, key: 'totals' }].map(({ label, arbs, odds, key }) => (
-        <Box key={key} w="33%">
+    <Box w="100%" p={4}>
+      <Grid
+        templateColumns={{ base: '1fr', md: '1fr 1fr 1fr' }} // 1 column for mobile and 3 for larger screens
+        gap={6}
+      >
+        {/* H2H Arbitrage Section */}
+        <Box>
           <Heading as="h2" size="md" mb={3} color="teal.800">
-            {label} Arbitrage
+            H2H Arbitrage
           </Heading>
           <Flex direction="column" gap={4} mb={6}>
-            {arbs.length ? (
-              arbs.map((arb, index) => (
+            {h2hArbs.length ? (
+              h2hArbs.map((arb, index) => (
                 <Box key={index}>
                   {arb}
                 </Box>
@@ -79,18 +81,100 @@ const H2hSpreadTotal = () => {
               </Box>
             )}
           </Flex>
+        </Box>
 
-          <Divider borderColor="teal.300" mb={4} />
-
+        {/* Spread Arbitrage Section */}
+        <Box>
           <Heading as="h2" size="md" mb={3} color="teal.800">
-            {label} Odds
+            Spread Arbitrage
           </Heading>
-          <Flex direction="column" gap={4}>
-            {renderOdds(odds, key)}
+          <Flex direction="column" gap={4} mb={6}>
+            {spreadArbs.length ? (
+              spreadArbs.map((arb, index) => (
+                <Box key={index}>
+                  {arb}
+                </Box>
+              ))
+            ) : (
+              <Box
+                p={4}
+                textAlign="center"
+                border="1px dashed"
+                borderColor="gray.300"
+                borderRadius="md"
+                color="gray.500"
+              >
+                No arbitrage found.
+              </Box>
+            )}
           </Flex>
         </Box>
-      ))}
-    </Flex>
+
+        {/* Total Arbitrage Section */}
+        <Box>
+          <Heading as="h2" size="md" mb={3} color="teal.800">
+            Total Arbitrage
+          </Heading>
+          <Flex direction="column" gap={4} mb={6}>
+            {totalArbs.length ? (
+              totalArbs.map((arb, index) => (
+                <Box key={index}>
+                  {arb}
+                </Box>
+              ))
+            ) : (
+              <Box
+                p={4}
+                textAlign="center"
+                border="1px dashed"
+                borderColor="gray.300"
+                borderRadius="md"
+                color="gray.500"
+              >
+                No arbitrage found.
+              </Box>
+            )}
+          </Flex>
+        </Box>
+      </Grid>
+
+      <Divider borderColor="teal.300" my={6} />
+
+      {/* H2H Odds Section */}
+      <Grid
+        templateColumns={{ base: '1fr', md: '1fr 1fr 1fr' }} // 1 column for mobile and 3 for larger screens
+        gap={6}
+      >
+        <Box>
+          <Heading as="h2" size="md" mb={3} color="teal.800">
+            H2H Odds
+          </Heading>
+          <Flex direction="column" gap={4}>
+            {renderOdds(h2hOdds, 'h2h')}
+          </Flex>
+        </Box>
+
+        {/* Spread Odds Section */}
+        <Box>
+          <Heading as="h2" size="md" mb={3} color="teal.800">
+            Spread Odds
+          </Heading>
+          <Flex direction="column" gap={4}>
+            {renderOdds(spreadOdds, 'spreads')}
+          </Flex>
+        </Box>
+
+        {/* Total Odds Section */}
+        <Box>
+          <Heading as="h2" size="md" mb={3} color="teal.800">
+            Total Odds
+          </Heading>
+          <Flex direction="column" gap={4}>
+            {renderOdds(totalOdds, 'totals')}
+          </Flex>
+        </Box>
+      </Grid>
+    </Box>
   );
 };
 

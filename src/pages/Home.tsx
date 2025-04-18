@@ -1,89 +1,144 @@
-import { Box, Heading, Text, List, ListItem, OrderedList, Button, Flex } from '@chakra-ui/react';
-import ArbitrageCalculator from '../components/ui/arbitrageCalculator';
+import {
+  Box,
+  Heading,
+  Text,
+  List,
+  ListItem,
+  OrderedList,
+  Button,
+  Flex,
+  VStack,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import ArbitrageCalculator from "../components/ui/arbitrageCalculator";
 
 const Home = () => {
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   return (
-    <Flex >
-      <ArbitrageCalculator/>
-    <Flex p={4} bg="gray.50" borderRadius="md" boxShadow="lg" flexDirection='column'>
-      {/* Page Title */}
-      <Heading as="h2" size="xl" mb={4} color="teal.800" fontWeight="bold">
-        Welcome to the NBA Betting Arbitrage Tool!
-      </Heading>
-      
-      {/* Introduction Text */}
-      <Text fontSize="lg" mb={6} color="gray.700">
-        Are you looking to maximize your profits and minimize risks in NBA betting? You're in the right place! This tool helps you spot arbitrage opportunities in real-time, allowing you to take advantage of differing odds across multiple bookmakers.
-      </Text>
+    <Flex direction="column" align="center" p={6} bg="gray.50" minH="100vh">
+      {/* Header */}
+      <Box textAlign="center" mb={10} width="100%">
+        <Heading size="2xl" fontWeight="extrabold" color="teal.700" mb={4}>
+          NBA Betting Arbitrage Tool
+        </Heading>
+        <Text fontSize="xl" color="gray.700" maxW="800px" mx="auto">
+          Discover profitable betting opportunities across bookmakers. Use our
+          real-time arbitrage detection and calculator to lock in guaranteed
+          profits.
+        </Text>
+      </Box>
 
-      <Text fontSize="md" mb={6} color="gray.600">
-        Arbitrage betting is a technique that involves placing bets on all possible outcomes of a game with different bookmakers, ensuring a guaranteed profit regardless of the result. By exploiting discrepancies in odds, you can make money even when the game’s outcome is uncertain.
-      </Text>
-
-      {/* Features List */}
-      <Heading as="h3" size="lg" mb={4} color="teal.700">
-        Key Features:
-      </Heading>
-      <List spacing={3} mb={6} color="gray.600">
-        <ListItem>
-          <strong>Real-Time Arbitrage Opportunities:</strong> Find the best odds for player props, spreads, and totals across multiple bookmakers.
-        </ListItem>
-        <ListItem>
-          <strong>Player Props Analysis:</strong> Dive deep into player props like points, assists, and rebounds for both over and under markets.
-        </ListItem>
-        <ListItem>
-          <strong>H2H Spreads & Totals:</strong> Get insights on head-to-head spreads and total bets for every NBA game.
-        </ListItem>
-        <ListItem>
-          <strong>Easy-to-Use Interface:</strong> Enjoy a user-friendly design that makes finding and calculating arbitrage bets quick and easy.
-        </ListItem>
-        <ListItem>
-          <strong>Dynamic Betting Data:</strong> Get the latest odds and market data updated in real-time to help you make informed decisions.
-        </ListItem>
-      </List>
-
-      {/* How Arbitrage Works */}
-      <Heading as="h3" size="lg" mb={4} color="teal.700">
-        How Arbitrage Betting Works:
-      </Heading>
-      <Text fontSize="md" mb={4} color="gray.600">
-        To calculate arbitrage opportunities, you need to compare the odds for different outcomes of a game. For example, if one bookmaker offers a better price for the "Over" on assists and another for the "Under", combining these bets creates an arbitrage opportunity. Here's how it's calculated:
-      </Text>
-      
-      <OrderedList mb={6} color="gray.600">
-        <ListItem>
-          <strong>Step 1:</strong> Identify the markets with differing odds from multiple bookmakers.
-        </ListItem>
-        <ListItem>
-          <strong>Step 2:</strong> Calculate the implied probability of each outcome using the odds.
-        </ListItem>
-        <ListItem>
-          <strong>Step 3:</strong> Place bets on each outcome in such a way that your combined stakes guarantee a profit regardless of the result.
-        </ListItem>
-        <ListItem>
-          <strong>Step 4:</strong> Lock in your profits by betting on all potential outcomes of the game, ensuring your risk is minimized.
-        </ListItem>
-      </OrderedList>
-
-      {/* Call to Action */}
-      <Button 
-        colorScheme="teal" 
-        variant="solid" 
-        size="lg" 
-        borderRadius="md" 
-        _hover={{
-          bg: 'teal.600', 
-          transform: 'scale(1.05)', 
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        }}
-        _active={{
-          bg: 'teal.700', 
-          transform: 'scale(1.03)',
-        }}
+      {/* Main Content */}
+      <Flex
+        direction={isMobile ? "column" : "row"}
+        gap={8}
+        width="100%"
+        maxW="1200px"
+        align="start"
+        justify="center"
       >
-        Start Finding Arbitrage Bets Now!
-      </Button>      
-    </Flex>   
+        {/* Left - Calculator */}
+        <Box
+          flex="1"
+          bg="white"
+          p={6}
+          borderRadius="2xl"
+          boxShadow="md"
+          width="100%"
+          maxWidth={isMobile ? "100%" : "500px"}
+        >
+          <Heading size="lg" color="teal.700" mb={4}>
+            Arbitrage Calculator
+          </Heading>
+          <Text fontSize="md" mb={4} color="gray.600">
+            Enter odds and your total stake to calculate how much to bet on each
+            outcome for a guaranteed return.
+          </Text>
+          <ArbitrageCalculator />
+        </Box>
+
+        {/* Right - Features and How It Works */}
+        <VStack
+          flex="1"
+          spacing={6}
+          align="stretch"
+          width="100%"
+          maxWidth={isMobile ? "100%" : "600px"}
+        >
+          {/* What You Can Do */}
+          <Box bg="white" p={6} borderRadius="2xl" boxShadow="md">
+            <Heading size="lg" color="teal.700" mb={4}>
+              What You Can Do
+            </Heading>
+            <List spacing={4} fontSize="md" color="gray.700">
+              <ListItem>
+                ✅ <strong>Use Arbitrage Calculator:</strong> Calculate stake
+                splits and profits instantly.
+              </ListItem>
+              <ListItem>
+                ✅ <strong>Scan Arbitrage Opportunities:</strong> Find value
+                from odds differences in real time.
+              </ListItem>
+              <ListItem>
+                ✅ <strong>Full Market Coverage:</strong> Analyze:
+                <List pl={6} pt={2} spacing={1}>
+                  <ListItem>• H2H (Head-to-Head)</ListItem>
+                  <ListItem>• Spreads</ListItem>
+                  <ListItem>• Totals (Over/Under)</ListItem>
+                  <ListItem>
+                    • Player Props (Assists, Rebounds, Points)
+                  </ListItem>
+                </List>
+              </ListItem>
+              <ListItem>
+                ✅ <strong>Live Odds Sync:</strong> Data updates constantly for
+                the latest betting edge.
+              </ListItem>
+            </List>
+          </Box>
+
+          {/* How It Works */}
+          <Box bg="white" p={6} borderRadius="2xl" boxShadow="md">
+            <Heading size="lg" color="teal.700" mb={4}>
+              How Arbitrage Betting Works
+            </Heading>
+            <Text fontSize="md" mb={4} color="gray.600">
+              Arbitrage betting lets you place bets on all outcomes with
+              different bookmakers to ensure a profit. Here’s how:
+            </Text>
+            <OrderedList spacing={3} color="gray.700" fontSize="md" mb={6}>
+              <ListItem>
+                Identify bookmakers offering opposite value on a market.
+              </ListItem>
+              <ListItem>
+                Calculate the implied probability from the odds.
+              </ListItem>
+              <ListItem>
+                Use the calculator to determine ideal bet amounts for each side.
+              </ListItem>
+              <ListItem>
+                Place both bets and lock in profit — regardless of outcome.
+              </ListItem>
+            </OrderedList>
+            <Flex justify="center">
+              <Button
+                colorScheme="teal"
+                size="lg"
+                borderRadius="xl"
+                px={8}
+                py={6}
+                fontSize={{ base: "md", sm: "lg", md: "xl" }} // Responsive font size
+                _hover={{ boxShadow: "lg", transform: "scale(1.03)" }}
+                href="/arbitrage-betting/h2h-spread-total"
+                as="a"
+              >
+                Explore Arbitrage Opportunities
+              </Button>
+            </Flex>
+          </Box>
+        </VStack>
+      </Flex>
     </Flex>
   );
 };

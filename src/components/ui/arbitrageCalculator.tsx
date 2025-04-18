@@ -40,9 +40,8 @@ const ArbitrageCalculator = () => {
       w="100%"
       mx="auto"
       bg={bg}
-      p={8}
+      p={5}
       borderRadius="2xl"
-      mt={10}
     >
       <VStack spacing={6} align="stretch">
         <Heading size="lg" textAlign="center" color="teal.600">

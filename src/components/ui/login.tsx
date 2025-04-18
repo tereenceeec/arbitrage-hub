@@ -10,12 +10,13 @@ import {
   Text,
   useToast,
   Flex,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 
 const hardcodedUsers = [
   { username: 'admin', password: 'Qwerty123' },
   { username: 'terencec', password: 'Qwerty123' },
-  { username: 'davidc', password: 'Qwerty123' }
+  { username: 'davidc', password: 'Qwerty123' },
 ];
 
 const Login = ({ onLogin }: { onLogin: () => void }) => {
@@ -31,6 +32,7 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
 
     if (user) {
       localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', user.username);
       onLogin();
     } else {
       setError('Invalid username or password');
@@ -44,10 +46,29 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // prevent page reload
+    handleLogin();
+  };
+
   return (
-    <Flex minH="100vh" align="center" justify="center" bg="gray.50" px={4} flexDirection={'column'} >
-        <Box><Text fontSize='36' fontWeight={700} mb='30px' color="teal.700">Arbitrage Betting Tool</Text></Box>
+    <Flex
+      minH="100vh"
+      align="center"
+      justify="center"
+      bgGradient="linear(to-r, teal.700, teal.500)"
+      px={4}
+      flexDirection="column"
+    >
+      <Box mb={6}>
+        <Text fontSize="4xl" fontWeight={700} color="white">
+          Arbitrage Betting Tool
+        </Text>
+      </Box>
+
       <Box
+        as="form"
+        onSubmit={handleSubmit}
         bg="white"
         p={8}
         rounded="2xl"
@@ -90,10 +111,10 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
 
           <Button
             colorScheme="teal"
-            onClick={handleLogin}
+            type="submit"
             size="lg"
             fontWeight="bold"
-            _hover={{ boxShadow: 'md' }}
+            _hover={{ boxShadow: 'lg', bg: 'teal.600' }}
           >
             Log In
           </Button>

@@ -85,7 +85,9 @@ const PlayerPropsRebounds = () => {
       </Box>
     ));
   };
-const bgColor = useColorModeValue('gray.50', 'gray.700');
+
+  const bgColor = useColorModeValue('gray.50', 'gray.700');
+
   return (
     <Box p={4}>
       <Heading mb={4}>Player Props - Rebounds</Heading>
@@ -94,7 +96,7 @@ const bgColor = useColorModeValue('gray.50', 'gray.700');
         Arbitrage
       </Heading>
 
-      <Grid templateColumns="repeat(1, 1fr)" gap={4} mb={6}>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)' }} gap={4} mb={6}>
         {renderArbitrageRebounds(playerProps) ? (
           renderArbitrageRebounds(playerProps)
         ) : (
@@ -111,7 +113,7 @@ const bgColor = useColorModeValue('gray.50', 'gray.700');
               {game.home_team} vs {game.away_team}
             </Heading>
 
-            <Grid templateColumns="repeat(4, 1fr)" gap={4}>
+            <Grid templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }} gap={4}>
               {renderPlayerProps(game).map((prop, idx) => (
                 <GridItem
                   key={idx}
