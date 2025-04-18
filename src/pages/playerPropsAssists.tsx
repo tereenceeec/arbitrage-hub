@@ -8,26 +8,52 @@ import {
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { fetchGameIds, fetchPlayerPropsAssists } from '../api';
+import { fetchGameIds, fetchPlayerPropsAlternateAssists, fetchPlayerPropsAssists } from '../api';
 import { renderArbitrageAssists } from '../components/functions/renderArbitrageAssists';
 
 const PlayerPropsAssists = () => {
   const [playerProps, setPlayerProps] = useState<any[]>([]);
 
   useEffect(() => {
-    const loadPlayerProps = async () => {
-      try {
-        const ids = await fetchGameIds();
-        const propPromises = ids.map((id) => fetchPlayerPropsAssists(id));
-        const propsData = await Promise.all(propPromises);
-        setPlayerProps(propsData);
-      } catch (error) {
-        console.error('Failed to fetch player props:', error);
-      }
-    };
-
-    loadPlayerProps();
-  }, []);
+      const loadPlayerProps = async () => {
+        try {
+          const ids = await fetchGameIds();
+  
+          const combinedGames = await Promise.all(
+            ids.map(async (id) => {
+              const [mainProps, altProps] = await Promise.all([
+                fetchPlayerPropsAssists(id),
+                fetchPlayerPropsAlternateAssists(id),
+              ]);
+  
+              // Merge markets (assumes same structure, same bookmakers array)
+              const mergedBookmakers = mainProps.bookmakers.map((bookmaker: any) => {
+                const altBookmaker = altProps.bookmakers.find((b: any) => b.key === bookmaker.key);
+                const mergedMarkets = [
+                  ...(bookmaker.markets || []),
+                  ...(altBookmaker?.markets || []),
+                ];
+                return {
+                  ...bookmaker,
+                  markets: mergedMarkets,
+                };
+              });
+  
+              return {
+                ...mainProps,
+                bookmakers: mergedBookmakers,
+              };
+            })
+          );
+  
+          setPlayerProps(combinedGames);
+        } catch (error) {
+          console.error('Failed to fetch player props:', error);
+        }
+      };
+  
+      loadPlayerProps();
+    }, []);
 
   const renderPlayerProps = (game: any) => {
     const playerData: { [key: string]: any } = {};

@@ -8,7 +8,7 @@ import {
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { fetchGameIds, fetchPlayerPropsRebounds } from '../api';
+import { fetchGameIds, fetchPlayerPropsRebounds, fetchPlayerPropsAlternateRebounds } from '../api';
 import { renderArbitrageRebounds } from '../components/functions/renderArbitrageRebounds';
 
 const PlayerPropsRebounds = () => {
@@ -18,9 +18,35 @@ const PlayerPropsRebounds = () => {
     const loadPlayerProps = async () => {
       try {
         const ids = await fetchGameIds();
-        const propPromises = ids.map((id) => fetchPlayerPropsRebounds(id));
-        const propsData = await Promise.all(propPromises);
-        setPlayerProps(propsData);
+
+        const combinedGames = await Promise.all(
+          ids.map(async (id) => {
+            const [mainProps, altProps] = await Promise.all([
+              fetchPlayerPropsRebounds(id),
+              fetchPlayerPropsAlternateRebounds(id),
+            ]);
+
+            // Merge markets (assumes same structure, same bookmakers array)
+            const mergedBookmakers = mainProps.bookmakers.map((bookmaker: any) => {
+              const altBookmaker = altProps.bookmakers.find((b: any) => b.key === bookmaker.key);
+              const mergedMarkets = [
+                ...(bookmaker.markets || []),
+                ...(altBookmaker?.markets || []),
+              ];
+              return {
+                ...bookmaker,
+                markets: mergedMarkets,
+              };
+            });
+
+            return {
+              ...mainProps,
+              bookmakers: mergedBookmakers,
+            };
+          })
+        );
+
+        setPlayerProps(combinedGames);
       } catch (error) {
         console.error('Failed to fetch player props:', error);
       }
