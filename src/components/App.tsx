@@ -30,6 +30,7 @@ import H2hSpreadTotal from "../pages/h2hSpreadTotal";
 import PlayerPropsRebounds from "../pages/playerPropsRebounds";
 import PlayerPropsPoints from "../pages/playerPropsPoints";
 import Login from "./ui/login";
+import H2hSpreadTotalAFL from "../pages/h2hSpreadTotalAFL";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -79,6 +80,10 @@ const App = () => {
     {
       name: "Player Props - Points",
       path: "/arbitrage-betting/player-props-points",
+    },
+    {
+      name: "AFL Bets",
+      path: "/arbitrage-betting/h2h-spread-total-afl",
     },
   ];
 
@@ -259,6 +264,10 @@ const App = () => {
         <Route
           path="/arbitrage-betting/player-props-points"
           element={<PlayerPropsPoints />}
+        />
+        <Route
+          path="/arbitrage-betting/h2h-spread-total-afl"
+          element={<H2hSpreadTotalAFL />}
         />
       </Routes>
     </Box>
