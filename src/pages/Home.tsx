@@ -22,11 +22,11 @@ const Home = () => {
       {/* Header */}
       <Box textAlign="center" mb={12}>
         <Heading size="3xl" fontWeight="bold" color="teal.700" mb={4}>
-          🧠 NBA Arbitrage Hub
+          🧠 Arbitrage Hub
         </Heading>
         <Text fontSize="xl" color="gray.700" maxW="800px" mx="auto">
           Discover real-time arbitrage opportunities, calculate guaranteed
-          profits, and make smarter NBA bets across multiple markets.
+          profits, and make smarter bets across multiple markets.
         </Text>
       </Box>
 
