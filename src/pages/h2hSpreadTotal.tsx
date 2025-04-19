@@ -3,7 +3,7 @@ import {
   fetchH2HOdds,
   fetchSpreadOdds,
   fetchGameIds,
-  fetchTotals,
+  fetchTotalOdds,
   fetchAlternateTotals,
   fetchAlternateSpreads,
 } from '../api';
@@ -24,7 +24,7 @@ const H2hSpreadTotal = () => {
       try {
         const h2hData = await fetchH2HOdds();
         const spreadData = await fetchSpreadOdds();
-        const totalData = await fetchTotals(); // Regular totals
+        const totalData = await fetchTotalOdds(); // Regular totals
         const eventIds = await fetchGameIds();
         const altTotalsData = await fetchAlternateTotals(eventIds); // Alternate totals
         const altSpreadsData = await fetchAlternateSpreads(eventIds); // Alternate spreads

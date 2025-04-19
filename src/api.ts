@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_ODDS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds';
 const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events';
+const API_ODDS_URL_AFL = 'https://api.the-odds-api.com/v4/sports/aussierules_afl/odds';
+const API_EVENTS_URL_AFL = 'https://api.the-odds-api.com/v4/sports/aussierules_afl/events';
 const API_KEY = [
   'f90f511bc98e64f919a5317db8c220dc',
   'e237fae64b503a4d4d409eb00e230e68',
@@ -50,11 +52,6 @@ const fetchOdds = async (markets: string): Promise<any> => {
 export const fetchH2HOdds = () => fetchOdds('h2h');
 export const fetchSpreadOdds = () => fetchOdds('spreads');
 export const fetchTotalOdds = () => fetchOdds('totals');
-
-// Fetch totals market
-export const fetchTotals = async (): Promise<any> => {
-  return fetchOdds('totals');
-};
 
 // Fetch alternate totals market
 export const fetchAlternateTotals = async (eventIds: string[]): Promise<any[]> => {
@@ -150,3 +147,85 @@ export const fetchPlayerPropsPoints = (gameId: string) => fetchPlayerProps(gameI
 export const fetchPlayerPropsAlternatePoints = (gameId: string) =>
   fetchPlayerProps(gameId, 'player_points_alternate');
 
+
+
+// Fetch AFL odds
+export const fetchAFLGameIds = async (): Promise<string[]> => {
+  try {
+    const response = await axios.get(API_EVENTS_URL_AFL, {
+      params: {
+        regions: 'au',
+        apiKey: API_KEY[currentKeyIndex],
+      },
+    });
+    const data = response.data;
+    const ids: string[] = data.map((game: any) => game.id);
+    return ids;
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(fetchAFLGameIds);
+    console.error('Error fetching game IDs:', error);
+    return [];
+  }
+};
+
+const fetchAFLOdds = async (markets: string): Promise<any> => {
+  try {
+    const response = await axios.get(API_ODDS_URL_AFL, {
+      params: {
+        regions: 'au',
+        markets,
+        apiKey: API_KEY[currentKeyIndex],
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(() => fetchAFLOdds(markets));
+    console.error(`Error fetching odds for ${markets}:`, error);
+    throw error;
+  }
+};
+
+export const fetchAlternateAFLTotals = async (eventIds: string[]): Promise<any[]> => {
+  try {
+    const requests = eventIds.map(id =>
+      axios.get(`https://api.the-odds-api.com/v4/sports/aussierules_afl/events/${id}/odds`, {
+        params: {
+          regions: 'au',
+          markets: 'alternate_totals',
+          apiKey: API_KEY[currentKeyIndex],
+        },
+      })
+    );
+    const responses = await Promise.all(requests);
+    return responses.map(res => res.data);
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(() => fetchAlternateAFLTotals(eventIds));
+    console.error('Error fetching alternate totals:', error);
+    return [];
+  }
+};
+
+export const fetchAlternateAFLSpreads = async (eventIds: string[]): Promise<any[]> => {
+  try {
+    const requests = eventIds.map(id =>
+      axios.get(`https://api.the-odds-api.com/v4/sports/aussierules_afl/events/${id}/odds`, {
+        params: {
+          regions: 'au',
+          markets: 'alternate_spreads',
+          apiKey: API_KEY[currentKeyIndex],
+        },
+      })
+    );
+    const responses = await Promise.all(requests);
+    return responses.map(res => res.data);
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(() => fetchAlternateAFLSpreads(eventIds));
+    console.error('Error fetching alternate spreads:', error);
+    return [];
+  }
+};
+
+
+export const fetchH2HAFLOdds = () => fetchAFLOdds('h2h');
+export const fetchSpreadAFLOdds = () => fetchAFLOdds('spreads');
+export const fetchTotalAFLOdds = () => fetchAFLOdds('totals');
