@@ -45,45 +45,55 @@ export const renderArbitragePoints = (games: Game[]): JSX.Element => {
     return [...main, ...alt];
   };
 
-  games.forEach((game) => {
-    const players: Record<string, Record<string, { overs: Outcome[]; unders: Outcome[] }>> = {};
+  // Declare a Set to track unique bets
+const seenBets = new Set();
 
-    game.bookmakers.forEach((bookmaker) => {
-      const combinedOutcomes = extractCombinedPlayerPoints(bookmaker.markets);
-      if (!combinedOutcomes.length) return;
+games.forEach((game) => {
+  const players: Record<string, Record<string, { overs: Outcome[]; unders: Outcome[] }>> = {};
 
-      combinedOutcomes.forEach((outcome) => {
-        const playerName = outcome.description;
-        if (!players[playerName]) players[playerName] = {};
-        if (!players[playerName][bookmaker.title])
-          players[playerName][bookmaker.title] = { overs: [], unders: [] };
+  game.bookmakers.forEach((bookmaker) => {
+    const combinedOutcomes = extractCombinedPlayerPoints(bookmaker.markets);
+    if (!combinedOutcomes.length) return;
 
-        if (outcome.name === "Over") {
-          players[playerName][bookmaker.title].overs.push(outcome);
-        } else if (outcome.name === "Under") {
-          players[playerName][bookmaker.title].unders.push(outcome);
-        }
-      });
+    combinedOutcomes.forEach((outcome) => {
+      const playerName = outcome.description;
+      if (!players[playerName]) players[playerName] = {};
+      if (!players[playerName][bookmaker.title])
+        players[playerName][bookmaker.title] = { overs: [], unders: [] };
+
+      if (outcome.name === "Over") {
+        players[playerName][bookmaker.title].overs.push(outcome);
+      } else if (outcome.name === "Under") {
+        players[playerName][bookmaker.title].unders.push(outcome);
+      }
     });
+  });
 
-    Object.entries(players).forEach(([playerName, books]) => {
-      const bookmakers = Object.entries(books);
-      for (let i = 0; i < bookmakers.length; i++) {
-        const [bk1, odds1] = bookmakers[i];
-        for (let j = 0; j < bookmakers.length; j++) {
-          if (i === j) continue;
-          const [bk2, odds2] = bookmakers[j];
+  Object.entries(players).forEach(([playerName, books]) => {
+    const bookmakers = Object.entries(books);
+    for (let i = 0; i < bookmakers.length; i++) {
+      const [bk1, odds1] = bookmakers[i];
+      for (let j = 0; j < bookmakers.length; j++) {
+        if (i === j) continue;
+        const [bk2, odds2] = bookmakers[j];
 
-          odds1.overs.forEach((over) => {
-            odds2.unders.forEach((under) => {
-              if (
-                over.point !== undefined &&
-                under.point !== undefined &&
-                over.point <= under.point &&
-                checkArbitrage(over.price, under.price)
-              ) {
-                const profit = calculateProfitPercent(over.price, under.price, 1000);
-                
+        odds1.overs.forEach((over) => {
+          odds2.unders.forEach((under) => {
+            if (
+              over.point !== undefined &&
+              under.point !== undefined &&
+              over.point <= under.point &&
+              checkArbitrage(over.price, under.price)
+            ) {
+              const profit = calculateProfitPercent(over.price, under.price, 1000);
+
+              // Generate a unique key for the arbitrage bet
+              const betKey = `${game.home_team}-${game.away_team}-${playerName}-${over.point}-${under.point}`;
+
+              // Check if the bet has already been added
+              if (!seenBets.has(betKey)) {
+                seenBets.add(betKey);
+
                 // Card component with click handling
                 const Card = () => {
                   const navigate = useNavigate();
@@ -133,35 +143,36 @@ export const renderArbitragePoints = (games: Game[]): JSX.Element => {
                   profit,
                 });
               }
-            });
+            }
           });
-        }
+        });
       }
-    });
+    }
   });
+});
 
-  const sorted = playerPropsArbitrage.sort((a, b) => b.profit - a.profit);
+const sorted = playerPropsArbitrage.sort((a, b) => b.profit - a.profit);
 
-  return (
-    <Grid
-      templateColumns={{ base: "1fr", sm: "1fr", md: "repeat(3, 1fr)" }}
-      gap={5}
-      py={5}
-    >
-      {sorted.length > 0 ? (
-        sorted.map((item, idx) => <React.Fragment key={idx}>{item.jsx}</React.Fragment>)
-      ) : (
-        <Box
-          p={4}
-          textAlign="center"
-          border="1px dashed"
-          borderColor="gray.300"
-          borderRadius="md"
-          color="gray.500"
-        >
-          No arbitrage found.
-        </Box>
-      )}
-    </Grid>
-  );
-};
+return (
+  <Grid
+    templateColumns={{ base: "1fr", sm: "1fr", md: "repeat(3, 1fr)" }}
+    gap={5}
+    py={5}
+  >
+    {sorted.length > 0 ? (
+      sorted.map((item, idx) => <React.Fragment key={idx}>{item.jsx}</React.Fragment>)
+    ) : (
+      <Box
+        p={4}
+        textAlign="center"
+        border="1px dashed"
+        borderColor="gray.300"
+        borderRadius="md"
+        color="gray.500"
+      >
+        No arbitrage found.
+      </Box>
+    )}
+  </Grid>
+);
+}

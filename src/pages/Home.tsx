@@ -10,12 +10,33 @@ import {
   VStack,
   useBreakpointValue,
   Icon,
+  useToast,
 } from "@chakra-ui/react";
 import { FiTrendingUp, FiZap } from "react-icons/fi";
 import ArbitrageCalculator from "../components/ui/arbitrageCalculator";
+import { useEffect } from "react";
 
 const Home = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const toast = useToast();
+
+  useEffect(() => {
+    const showWelcome = localStorage.getItem('showWelcomeMessage');
+    const username = localStorage.getItem('username');
+
+    if (showWelcome === 'true' && username === 'davidc') {
+      toast({
+        title: 'A wild nigga appeared!',
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+        position: 'top',
+      });
+
+      // Remove the flag so it doesn't show again
+      localStorage.removeItem('showWelcomeMessage');
+    }
+  }, [toast]);
 
   return (
     <Box bgGradient="linear(to-br, gray.50, teal.50)" minH="100vh" p={6}>
