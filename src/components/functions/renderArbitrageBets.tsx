@@ -91,7 +91,7 @@ export const renderArbitrageBets = (
       oddsA: o1.price,
       oddsB: o2.price,
     });
-    navigate("/arbitrage-betting/");
+    navigate("/arbitrage-hub/");
   };
 
   const getArbitrageBets = useMemo(() => {

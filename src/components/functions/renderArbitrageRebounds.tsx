@@ -99,7 +99,7 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
 
                   const handleClick = () => {
                     setData({ oddsA: over.price, oddsB: under.price });
-                    navigate("/arbitrage-betting/"); // Navigate to the arbitrage calculator page
+                    navigate("/arbitrage-hub/"); // Navigate to the arbitrage calculator page
                   };
 
                   return (

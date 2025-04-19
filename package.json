@@ -1,5 +1,5 @@
 {
-  "name": "arbitrage-betting",
+  "name": "arbitrage-hub",
   "version": "1.0.0",
   "scripts": {
     "start": "react-scripts start",
@@ -31,15 +31,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tereenceeec/arbitrage-betting.git"
+    "url": "git+https://github.com/tereenceeec/arbitrage-hub.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tereenceeec/arbitrage-betting/issues"
+    "url": "https://github.com/tereenceeec/arbitrage-hub/issues"
   },
-  "homepage": "https://tereenceeec.github.io/arbitrage-betting/",
+  "homepage": "https://tereenceeec.github.io/arbitrage-hub/",
   "description": "",
   "browserslist": {
     "production": [

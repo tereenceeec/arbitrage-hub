@@ -101,7 +101,7 @@ games.forEach((game) => {
 
                   const handleClick = () => {
                     setData({ oddsA: over.price, oddsB: under.price });
-                    navigate("/arbitrage-betting/"); // Redirect to the home page to populate the calculator
+                    navigate("/arbitrage-hub/"); // Redirect to the home page to populate the calculator
                   };
 
                   return (

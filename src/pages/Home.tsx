@@ -113,7 +113,7 @@ const Home = () => {
             <Flex justify="center" mt={6}>
               <Button
                 as="a"
-                href="/arbitrage-betting/h2h-spread-total"
+                href="/arbitrage-hub/h2h-spread-total"
                 colorScheme="teal"
                 size="lg"
                 borderRadius="xl"

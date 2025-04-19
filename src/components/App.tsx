@@ -53,7 +53,7 @@ const App = () => {
     const storedUsername = localStorage.getItem("username");
     setIsLoggedIn(true);
     setUsername(storedUsername);
-    navigate("/arbitrage-betting/");
+    navigate("/arbitrage-hub/");
   };
 
   const handleLogout = () => {
@@ -64,26 +64,26 @@ const App = () => {
   };
 
   const navItems = [
-    { name: "Home", path: "/arbitrage-betting/" },
+    { name: "Home", path: "/arbitrage-hub/" },
     {
       name: "H2H - Spreads - Totals",
-      path: "/arbitrage-betting/h2h-spread-total",
+      path: "/arbitrage-hub/h2h-spread-total",
     },
     {
       name: "Player Props - Assists",
-      path: "/arbitrage-betting/player-props-assists",
+      path: "/arbitrage-hub/player-props-assists",
     },
     {
       name: "Player Props - Rebounds",
-      path: "/arbitrage-betting/player-props-rebounds",
+      path: "/arbitrage-hub/player-props-rebounds",
     },
     {
       name: "Player Props - Points",
-      path: "/arbitrage-betting/player-props-points",
+      path: "/arbitrage-hub/player-props-points",
     },
     {
       name: "AFL Bets",
-      path: "/arbitrage-betting/h2h-spread-total-afl",
+      path: "/arbitrage-hub/h2h-spread-total-afl",
     },
   ];
 
@@ -102,42 +102,40 @@ const App = () => {
     <Box p={4}>
       {/* Banner Section */}
       <Box
-        bgGradient="linear(to-r, teal.800, teal.500)"
-        color="white"
-        p={6}
-        borderRadius="md"
-        mb={6}
-        boxShadow="lg"
-      >
-        <Flex
-          align="center"
-          justify="center"
-          direction={{ base: "column", md: "row" }}
-          gap={6}
-          textAlign={{ base: "center", md: "left" }}
-        >
-          <Box mr='auto' ml={['auto', 'unset']}>
-          <Image
-            src="/arbitrage-betting/images/abt-logo-colour.png"
-            alt="ABT Logo"
-            maxW="80px"
-            borderRadius="lg"
-            boxShadow="md"
-            
-            
-          />
-          </Box>
-          <Box w='100%' textAlign='center'>
-            <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
-              Welcome to Arbitrage Betting!
-            </Text>
-            <Text fontSize={{ base: "sm", md: "md" }} mt={2}>
-              Find the best betting opportunities with ease. Maximize your
-              profits by leveraging arbitrage betting.
-            </Text>
-          </Box>
-        </Flex>
-      </Box>
+  bgGradient="linear(to-r, teal.800, teal.500)"
+  color="white"
+  p={6}
+  borderRadius="md"
+  mb={6}
+  boxShadow="lg"
+>
+  <Flex
+    align="center"
+    justify="center"
+    direction={{ base: "column", md: "row" }}
+    gap={6}
+    textAlign={{ base: "center", md: "left" }}
+  >
+    <Box mr="auto" ml={["auto", "unset"]}>
+      <Image
+        src="/arbitrage-hub/images/abt-logo-colour.png"
+        alt="ABT Logo"
+        maxW="80px"
+        borderRadius="lg"
+        boxShadow="md"
+      />
+    </Box>
+    <Box w="100%" textAlign="center">
+      <Text fontSize={{ base: "2xl", md: "3xl" }} fontWeight="bold">
+        Unlock Every Edge.
+      </Text>
+      <Text fontSize={{ base: "md", md: "lg" }} mt={2} opacity={0.85}>
+        Track value. Beat the books. Bet smarter.
+      </Text>
+    </Box>
+  </Flex>
+</Box>
+
 
       {/* Navigation Bar with Gradient */}
       <Flex
@@ -248,25 +246,25 @@ const App = () => {
 
       {/* Routes */}
       <Routes>
-        <Route path="/arbitrage-betting/" element={<Home />} />
+        <Route path="/arbitrage-hub/" element={<Home />} />
         <Route
-          path="/arbitrage-betting/h2h-spread-total"
+          path="/arbitrage-hub/h2h-spread-total"
           element={<H2hSpreadTotal />}
         />
         <Route
-          path="/arbitrage-betting/player-props-assists"
+          path="/arbitrage-hub/player-props-assists"
           element={<PlayerPropsAssists />}
         />
         <Route
-          path="/arbitrage-betting/player-props-rebounds"
+          path="/arbitrage-hub/player-props-rebounds"
           element={<PlayerPropsRebounds />}
         />
         <Route
-          path="/arbitrage-betting/player-props-points"
+          path="/arbitrage-hub/player-props-points"
           element={<PlayerPropsPoints />}
         />
         <Route
-          path="/arbitrage-betting/h2h-spread-total-afl"
+          path="/arbitrage-hub/h2h-spread-total-afl"
           element={<H2hSpreadTotalAFL />}
         />
       </Routes>

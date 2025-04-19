@@ -98,7 +98,7 @@ export const renderArbitrageAssists = (games: Game[]): JSX.Element => {
 
                   const handleClick = () => {
                     setData({ oddsA: over.price, oddsB: under.price });
-                    navigate("/arbitrage-betting/");
+                    navigate("/arbitrage-hub/");
                   };
 
                   return (
