@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   FormControl,
@@ -16,11 +16,22 @@ import {
   Fade,
   SimpleGrid,
 } from '@chakra-ui/react';
+import { useArbitrage } from '../functions/arbitrageContext';
 
 const ArbitrageCalculator = () => {
+  const { data, setData } = useArbitrage();
+
   const [oddsA, setOddsA] = useState('2.6');
   const [oddsB, setOddsB] = useState('1.9');
   const [stake, setStake] = useState('1000');
+
+  useEffect(() => {
+    if (data) {
+      setOddsA(data.oddsA.toString());
+      setOddsB(data.oddsB.toString());
+      setData(null); // Clear after using
+    }
+  }, [data]);
 
   const parsedOddsA = parseFloat(oddsA);
   const parsedOddsB = parseFloat(oddsB);

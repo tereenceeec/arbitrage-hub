@@ -12,7 +12,6 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { FiTrendingUp, FiZap } from "react-icons/fi";
-import { FaCalculator } from "react-icons/fa"; // Calculator icon from FontAwesome
 import ArbitrageCalculator from "../components/ui/arbitrageCalculator";
 
 const Home = () => {

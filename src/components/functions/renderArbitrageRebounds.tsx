@@ -1,6 +1,8 @@
 import React, { JSX } from "react";
 import { Box, Grid, Text } from "@chakra-ui/react";
 import { calculateProfitPercent } from "./calculateProfitPercent";
+import { useNavigate } from "react-router-dom";
+import { useArbitrage } from "../functions/arbitrageContext";
 
 interface Outcome {
   name: string;
@@ -91,39 +93,53 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
                   1000
                 );
 
-                const jsx = (
-                  <Box
-                    key={`${game.home_team}-${game.away_team}-${playerName}-${bk1}-${bk2}-${over.point}-${under.point}-${over.price}-${under.price}`}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    p={4}
-                    boxShadow="md"
-                    bg="gray.50"
-                  >
-                    <Text fontWeight="bold" fontSize="lg" color="teal.500">
-                      {game.home_team} vs {game.away_team}
-                    </Text>
-                    <Text fontWeight="bold" fontSize="lg" color="blue.600">
-                      {playerName} (Rebounds Market)
-                    </Text>
-                    <Text fontSize="sm">
-                      <strong>{bk1} (Over):</strong> {over.price} (Rebounds:{" "}
-                      {over.point})
-                    </Text>
-                    <Text fontSize="sm">
-                      <strong>{bk2} (Under):</strong> {under.price} (Rebounds:{" "}
-                      {under.point})
-                    </Text>
-                    <Text fontWeight="bold" color="red.500">
-                      Arbitrage!
-                    </Text>
-                    <Text fontWeight="bold" color="red.500">
-                      Profit: {profit.toFixed(2)}%
-                    </Text>
-                  </Box>
-                );
+                const Card = () => {
+                  const navigate = useNavigate();
+                  const { setData } = useArbitrage();
 
-                playerPropsArbitrage.push({ jsx, profit });
+                  const handleClick = () => {
+                    setData({ oddsA: over.price, oddsB: under.price });
+                    navigate("/arbitrage-betting/"); // Navigate to the arbitrage calculator page
+                  };
+
+                  return (
+                    <Box
+                      onClick={handleClick}
+                      cursor="pointer"
+                      _hover={{ bg: "gray.100" }}
+                      transition="0.2s"
+                      borderWidth="1px"
+                      borderRadius="md"
+                      p={4}
+                      boxShadow="md"
+                      bg="gray.50"
+                    >
+                      <Text fontWeight="bold" fontSize="lg" color="teal.500">
+                        {game.home_team} vs {game.away_team}
+                      </Text>
+                      <Text fontWeight="bold" fontSize="lg" color="blue.600">
+                        {playerName} (Rebounds Market)
+                      </Text>
+                      <Text fontSize="sm">
+                        <strong>{bk1} (Over):</strong> {over.price} (Line: {over.point})
+                      </Text>
+                      <Text fontSize="sm">
+                        <strong>{bk2} (Under):</strong> {under.price} (Line: {under.point})
+                      </Text>
+                      <Text fontWeight="bold" color="red.500">
+                        Arbitrage!
+                      </Text>
+                      <Text fontWeight="bold" color="red.500">
+                        Profit: {profit.toFixed(2)}%
+                      </Text>
+                    </Box>
+                  );
+                };
+
+                playerPropsArbitrage.push({
+                  jsx: <Card key={`arb-${game.home_team}-${playerName}-${over.point}-${under.point}`} />,
+                  profit,
+                });
               }
             });
           });
