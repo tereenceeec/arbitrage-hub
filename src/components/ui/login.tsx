@@ -62,7 +62,7 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
     >
       <Box mb={6}>
         <Text fontSize="4xl" fontWeight={700} color="white">
-          Arbitrage Betting Tool
+          Arbitrage Hub
         </Text>
       </Box>
 
