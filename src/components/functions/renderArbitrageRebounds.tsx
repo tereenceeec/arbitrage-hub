@@ -1,11 +1,12 @@
-import React, { JSX } from 'react';
-import { Box, Grid, Text } from '@chakra-ui/react';
+import React, { JSX } from "react";
+import { Box, Grid, Text } from "@chakra-ui/react";
+import { calculateProfitPercent } from "./calculateProfitPercent";
 
 interface Outcome {
   name: string;
   price: number;
   point?: number;
-  description: string; 
+  description: string;
 }
 
 interface Market {
@@ -33,19 +34,22 @@ const checkArbitrage = (overOdds: number, underOdds: number) => {
   return probOver + probUnder < 1;
 };
 
-
 export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
-  const playerPropsArbitrage: JSX.Element[] = [];
+  const playerPropsArbitrage: { jsx: JSX.Element; profit: number }[] = [];
 
   const extractCombinedPlayerRebounds = (markets?: Market[]) => {
-    const main = markets?.find((m) => m.key === 'player_rebounds')?.outcomes || [];
-    const alt = markets?.find((m) => m.key === 'player_rebounds_alternate')?.outcomes || [];
+    const main =
+      markets?.find((m) => m.key === "player_rebounds")?.outcomes || [];
+    const alt =
+      markets?.find((m) => m.key === "player_rebounds_alternate")?.outcomes || [];
     return [...main, ...alt];
   };
-  
 
   games.forEach((game) => {
-    const players: Record<string, Record<string, { overs: Outcome[]; unders: Outcome[] }>> = {};
+    const players: Record<
+      string,
+      Record<string, { overs: Outcome[]; unders: Outcome[] }>
+    > = {};
 
     game.bookmakers.forEach((bookmaker) => {
       const combinedOutcomes = extractCombinedPlayerRebounds(bookmaker.markets);
@@ -54,11 +58,12 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
       combinedOutcomes.forEach((outcome) => {
         const playerName = outcome.description;
         if (!players[playerName]) players[playerName] = {};
-        if (!players[playerName][bookmaker.title]) players[playerName][bookmaker.title] = { overs: [], unders: [] };
-        
-        if (outcome.name === 'Over') {
+        if (!players[playerName][bookmaker.title])
+          players[playerName][bookmaker.title] = { overs: [], unders: [] };
+
+        if (outcome.name === "Over") {
           players[playerName][bookmaker.title].overs.push(outcome);
-        } else if (outcome.name === 'Under') {
+        } else if (outcome.name === "Under") {
           players[playerName][bookmaker.title].unders.push(outcome);
         }
       });
@@ -72,7 +77,6 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
           if (i === j) continue;
           const [bk2, odds2] = bookmakers[j];
 
-          // Compare every over with every under
           odds1.overs.forEach((over) => {
             odds2.unders.forEach((under) => {
               if (
@@ -81,7 +85,13 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
                 over.point <= under.point &&
                 checkArbitrage(over.price, under.price)
               ) {
-                playerPropsArbitrage.push(
+                const profit = calculateProfitPercent(
+                  over.price,
+                  under.price,
+                  1000
+                );
+
+                const jsx = (
                   <Box
                     key={`${game.home_team}-${game.away_team}-${playerName}-${bk1}-${bk2}-${over.point}-${under.point}-${over.price}-${under.price}`}
                     borderWidth="1px"
@@ -97,16 +107,23 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
                       {playerName} (Rebounds Market)
                     </Text>
                     <Text fontSize="sm">
-                      <strong>{bk1} (Over):</strong> {over.price} (Rebounds: {over.point})
+                      <strong>{bk1} (Over):</strong> {over.price} (Rebounds:{" "}
+                      {over.point})
                     </Text>
                     <Text fontSize="sm">
-                      <strong>{bk2} (Under):</strong> {under.price} (Rebounds: {under.point})
+                      <strong>{bk2} (Under):</strong> {under.price} (Rebounds:{" "}
+                      {under.point})
                     </Text>
                     <Text fontWeight="bold" color="red.500">
                       Arbitrage!
                     </Text>
+                    <Text fontWeight="bold" color="red.500">
+                      Profit: {profit.toFixed(2)}%
+                    </Text>
                   </Box>
                 );
+
+                playerPropsArbitrage.push({ jsx, profit });
               }
             });
           });
@@ -115,10 +132,16 @@ export const renderArbitrageRebounds = (games: Game[]): JSX.Element => {
     });
   });
 
+  const sorted = playerPropsArbitrage.sort((a, b) => b.profit - a.profit);
+
   return (
-    <Grid templateColumns={{ base: '1fr', sm: '1fr', md: 'repeat(3, 1fr)' }} gap={5} py={5}>
-      {playerPropsArbitrage.length > 0 ? (
-        playerPropsArbitrage
+    <Grid
+      templateColumns={{ base: "1fr", sm: "1fr", md: "repeat(3, 1fr)" }}
+      gap={5}
+      py={5}
+    >
+      {sorted.length > 0 ? (
+        sorted.map((item, idx) => <React.Fragment key={idx}>{item.jsx}</React.Fragment>)
       ) : (
         <Box
           p={4}
