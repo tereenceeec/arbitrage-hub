@@ -23,7 +23,10 @@ const ArbitrageCalculator = () => {
 
   const [oddsA, setOddsA] = useState('2.6');
   const [oddsB, setOddsB] = useState('1.9');
-  const [stake, setStake] = useState('1000');
+  const [totalStake, setTotalStake] = useState('1000');
+  const [stakeA, setStakeA] = useState('');
+  const [stakeB, setStakeB] = useState('');
+  const [lastChanged, setLastChanged] = useState<'total' | 'a' | 'b' | null>('total');
 
   useEffect(() => {
     if (data) {
@@ -35,20 +38,44 @@ const ArbitrageCalculator = () => {
 
   const parsedOddsA = parseFloat(oddsA);
   const parsedOddsB = parseFloat(oddsB);
-  const parsedStake = parseFloat(stake);
+  const parsedTotalStake = parseFloat(totalStake);
+  const parsedStakeA = parseFloat(stakeA);
+  const parsedStakeB = parseFloat(stakeB);
 
-  const isValid = !isNaN(parsedOddsA) && !isNaN(parsedOddsB) && !isNaN(parsedStake);
+  const isValid = !isNaN(parsedOddsA) && !isNaN(parsedOddsB);
+
+  // Calculate bet distribution
   const arbPercent = isValid ? (1 / parsedOddsA) + (1 / parsedOddsB) : 0;
   const isArb = isValid && arbPercent < 1;
 
-  const betA = isValid ? (parsedStake * (1 / parsedOddsA)) / arbPercent : 0;
-  const betB = isValid ? (parsedStake * (1 / parsedOddsB)) / arbPercent : 0;
-  const payoutA = betA * parsedOddsA;
-  const payoutB = betB * parsedOddsB;
+  // Sync stakes based on user input
+  useEffect(() => {
+    if (!isValid || arbPercent === 0) return;
 
+    if (lastChanged === 'total') {
+      const betA = (parsedTotalStake * (1 / parsedOddsA)) / arbPercent;
+      const betB = (parsedTotalStake * (1 / parsedOddsB)) / arbPercent;
+      setStakeA(betA.toFixed(2));
+      setStakeB(betB.toFixed(2));
+    } else if (lastChanged === 'a') {
+      const betB = (parsedStakeA * (1 / parsedOddsB)) / (1 / parsedOddsA);
+      const total = parsedStakeA + betB;
+      setStakeB(betB.toFixed(2));
+      setTotalStake(total.toFixed(2));
+    } else if (lastChanged === 'b') {
+      const betA = (parsedStakeB * (1 / parsedOddsA)) / (1 / parsedOddsB);
+      const total = parsedStakeB + betA;
+      setStakeA(betA.toFixed(2));
+      setTotalStake(total.toFixed(2));
+    }
+  }, [parsedTotalStake, parsedStakeA, parsedStakeB, parsedOddsA, parsedOddsB, arbPercent, lastChanged]);
+
+  const payoutA = parseFloat(stakeA || '0') * parsedOddsA;
+  const payoutB = parseFloat(stakeB || '0') * parsedOddsB;
   const guaranteedReturn = Math.min(payoutA, payoutB);
-  const profit = guaranteedReturn - parsedStake;
-  const profitPercent = (profit / parsedStake) * 100;
+  const total = parseFloat(totalStake);
+  const profit = guaranteedReturn - total;
+  const profitPercent = (profit / total) * 100;
 
   const bg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -96,16 +123,49 @@ const ArbitrageCalculator = () => {
           </FormControl>
         </SimpleGrid>
 
-        <FormControl>
-          <FormLabel fontWeight="semibold">Total Stake ($)</FormLabel>
-          <Input
-            type="number"
-            value={stake}
-            onChange={(e) => setStake(e.target.value)}
-            placeholder="e.g. 1000"
-            focusBorderColor="teal.400"
-          />
-        </FormControl>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
+          <FormControl>
+            <FormLabel fontWeight="semibold">Stake on Side A ($)</FormLabel>
+            <Input
+              type="number"
+              value={stakeA}
+              onChange={(e) => {
+                setStakeA(e.target.value);
+                setLastChanged('a');
+              }}
+              placeholder="e.g. 600"
+              focusBorderColor="teal.400"
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel fontWeight="semibold">Stake on Side B ($)</FormLabel>
+            <Input
+              type="number"
+              value={stakeB}
+              onChange={(e) => {
+                setStakeB(e.target.value);
+                setLastChanged('b');
+              }}
+              placeholder="e.g. 400"
+              focusBorderColor="teal.400"
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel fontWeight="semibold">Total Stake ($)</FormLabel>
+            <Input
+              type="number"
+              value={totalStake}
+              onChange={(e) => {
+                setTotalStake(e.target.value);
+                setLastChanged('total');
+              }}
+              placeholder="e.g. 1000"
+              focusBorderColor="teal.400"
+            />
+          </FormControl>
+        </SimpleGrid>
 
         {isValid && (
           <Fade in={true}>
@@ -116,13 +176,13 @@ const ArbitrageCalculator = () => {
               <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4}>
                 <Stat>
                   <StatLabel>Side A</StatLabel>
-                  <StatNumber>${betA.toFixed(2)}</StatNumber>
+                  <StatNumber>${stakeA}</StatNumber>
                   <StatHelpText>Return: ${payoutA.toFixed(2)}</StatHelpText>
                 </Stat>
 
                 <Stat>
                   <StatLabel>Side B</StatLabel>
-                  <StatNumber>${betB.toFixed(2)}</StatNumber>
+                  <StatNumber>${stakeB}</StatNumber>
                   <StatHelpText>Return: ${payoutB.toFixed(2)}</StatHelpText>
                 </Stat>
               </SimpleGrid>
