@@ -5,6 +5,11 @@ const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/ev
 const API_ODDS_URL_AFL = 'https://api.the-odds-api.com/v4/sports/aussierules_afl/odds';
 const API_EVENTS_URL_AFL = 'https://api.the-odds-api.com/v4/sports/aussierules_afl/events';
 const API_KEY = [
+  '6ceee2dfc8c3728dcb0ea0ecdeb77d10',
+  'db94a8cc6e5ad821ae213270d6d0bf0e',
+  'c51ffcf14c9b231d13fc2e5040586a64',
+  '0916223359750d95a00b7cfba18332bd',
+  'eb94feb6200f3db5b8df679e71dc221e',
   'a871fca1e2d6e516b3eb191228439b41',
   '685a24369a5f36db9dbc9128cb713f53',
   '1d7cf0d863db69dfd11c6fb61af7ea64',
