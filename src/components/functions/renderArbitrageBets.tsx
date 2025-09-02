@@ -27,11 +27,10 @@ export interface Game {
   bookmakers: Bookmaker[];
 }
 
-const calculateImpliedProbability = (odds: number) => 0.2 / odds;
+const calculateImpliedProbability = (odds: number) => 1 / odds;
 
 const checkArbitrage = (price1: number, price2: number) =>
-  calculateImpliedProbability(price1) + calculateImpliedProbability(price2) <
-  1;
+  calculateImpliedProbability(price1) + calculateImpliedProbability(price2) < 1;
 
 const combineMarkets = (
   bookmakerKey: string,
@@ -118,11 +117,7 @@ export const renderArbitrageBets = (
                 );
 
                 if (o1 && o2 && checkArbitrage(o1.price, o2.price)) {
-                  const profit = calculateProfitPercent(
-                    o1.price,
-                    o2.price,
-                    1000
-                  );
+                  const profit = ((1 / ((1 / o1.price) + (1 / o2.price))) - 1) * 100;
                   addSortedBet(
                     <Box
                       key={`${game.home_team}-${game.away_team}-${b1.key}-${b2.key}-${o1.name}-${o2.name}`}
@@ -212,11 +207,7 @@ export const renderArbitrageBets = (
                     (point1 > 0 && point2 > 0 && point1 === point2);
 
                   if (isValidArb && checkArbitrage(o1.price, o2.price)) {
-                    const profit = calculateProfitPercent(
-                      o1.price,
-                      o2.price,
-                      1000
-                    );
+                    const profit = ((1 / ((1 / o1.price) + (1 / o2.price))) - 1) * 100;
                     addSortedBet(
                       <Box
                         key={`${game.home_team}-${game.away_team}-${b1.key}-${b2.key}-${team1}-${team2}-${point1}-${point2}`}
@@ -296,11 +287,7 @@ export const renderArbitrageBets = (
                     o1.point <= o2.point &&
                     checkArbitrage(o1.price, o2.price)
                   ) {
-                    const profit = calculateProfitPercent(
-                      o1.price,
-                      o2.price,
-                      1000
-                    );
+                    const profit = ((1 / ((1 / o1.price) + (1 / o2.price))) - 1) * 100;
                     addSortedBet(
                       <Box
                         key={`${game.home_team}-${game.away_team}-${b1.key}-${b2.key}-${o1.point}-${o2.point}`}
