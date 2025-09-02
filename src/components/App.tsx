@@ -25,12 +25,15 @@ import {
 } from "react-router-dom";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import Home from "../pages/Home";
-import PlayerPropsAssists from "../pages/playerPropsAssists";
-import H2hSpreadTotal from "../pages/h2hSpreadTotal";
-import PlayerPropsRebounds from "../pages/playerPropsRebounds";
-import PlayerPropsPoints from "../pages/playerPropsPoints";
+import PlayerPropsAssistsNBA from "../pages/playerPropsAssistsNBA";
+import H2hSpreadTotalNBA from "../pages/h2hSpreadTotalNBA";
+import PlayerPropsReboundsNBA from "../pages/playerPropsReboundsNBA";
+import PlayerPropsPointsNBA from "../pages/playerPropsPointsNBA";
 import Login from "./ui/login";
 import H2hSpreadTotalAFL from "../pages/h2hSpreadTotalAFL";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import H2hSpreadTotalNFL from "../pages/h2hSpreadTotalNFL";
+import PlayerPropsQBNFL from "../pages/PlayerPropsQBNFL";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -63,28 +66,20 @@ const App = () => {
     setUsername(null);
   };
 
-  const navItems = [
-    { name: "Home", path: "/arbitrage-hub/" },
-    {
-      name: "H2H - Spreads - Totals",
-      path: "/arbitrage-hub/h2h-spread-total",
-    },
-    {
-      name: "Player Props - Assists",
-      path: "/arbitrage-hub/player-props-assists",
-    },
-    {
-      name: "Player Props - Rebounds",
-      path: "/arbitrage-hub/player-props-rebounds",
-    },
-    {
-      name: "Player Props - Points",
-      path: "/arbitrage-hub/player-props-points",
-    },
-    {
-      name: "AFL Bets",
-      path: "/arbitrage-hub/h2h-spread-total-afl",
-    },
+  const navNBAItems = [
+    { name: "H2H - Spreads - Totals", path: "/arbitrage-hub/nba/h2h-spread-total" },
+    { name: "Player Props - Points", path: "/arbitrage-hub/nba/player-props/points" },
+    { name: "Player Props - Rebounds", path: "/arbitrage-hub/nba/player-props/rebounds" },
+    { name: "Player Props - Assists", path: "/arbitrage-hub/nba/player-props/assists" },
+  ];
+
+  const navAFLItems = [
+    { name: "H2H - Spreads - Totals", path: "/arbitrage-hub/afl/h2h-spread-total" },
+  ];
+
+  const navNFLItems = [
+    { name: "H2H - Spreads - Totals", path: "/arbitrage-hub/nfl/h2h-spread-total" },
+    { name: "Player Props - QB", path: "/arbitrage-hub/nfl/player-props/qb" },
   ];
 
   const getNavItemStyle = (path: string) => {
@@ -167,16 +162,18 @@ const App = () => {
                 </DrawerHeader>
                 <DrawerBody>
                   <VStack spacing={4} align="stretch" mt={4}>
-                    {navItems.map(({ name, path }) => (
-                      <Button
-                        as={RouterLink}
-                        to={path}
-                        key={name}
-                        variant="ghost"
-                        justifyContent="start"
-                        onClick={onClose}
-                        {...getNavItemStyle(path)} // Apply active styles
-                      >
+                    <Button as={RouterLink} to="/arbitrage-hub/" variant="ghost" justifyContent="start" onClick={onClose} {...getNavItemStyle("/arbitrage-hub/")}>Home</Button>
+
+                    <Text fontWeight="bold" color="teal.700">NBA</Text>
+                    {navNBAItems.map(({ name, path }) => (
+                      <Button as={RouterLink} to={path} key={name} variant="ghost" justifyContent="start" onClick={onClose} {...getNavItemStyle(path)}>
+                        {name}
+                      </Button>
+                    ))}
+
+                    <Text fontWeight="bold" color="teal.700">AFL</Text>
+                    {navAFLItems.map(({ name, path }) => (
+                      <Button as={RouterLink} to={path} key={name} variant="ghost" justifyContent="start" onClick={onClose} {...getNavItemStyle(path)}>
                         {name}
                       </Button>
                     ))}
@@ -195,28 +192,37 @@ const App = () => {
         ) : (
           <>
             <Flex wrap="wrap" align="center" gap={2}>
-              {navItems.map(({ name, path }, idx) => (
-                <Flex key={name} align="center">
-                  <Button
-                    as={RouterLink}
-                    to={path}
-                    variant="solid"
-                    borderRadius="md"
-                    fontSize="lg"
-                    px={4}
-                    py={2}
-                    transition="all 0.2s"
-                    _hover={{ bg: "teal.700" }}
-                    _active={{ bg: "teal.900" }}
-                    {...getNavItemStyle(path)} // Apply active styles
-                  >
-                    {name}
-                  </Button>
-                  {idx < navItems.length - 1 && (
-                    <Box height="28px" width="1px" bg="whiteAlpha.600" mx={2} />
-                  )}
-                </Flex>
-              ))}
+              <Button as={RouterLink} to="/arbitrage-hub/" variant="solid" borderRadius="md" fontSize="lg" px={4} py={2} transition="all 0.2s" _hover={{ bg: "teal.700" }} _active={{ bg: "teal.900" }} {...getNavItemStyle("/arbitrage-hub/")}>Home</Button>
+              <Box height="28px" width="1px" bg="whiteAlpha.600" mx={2} />
+
+              <Menu>
+                <MenuButton as={Button} rightIcon={<HamburgerIcon />} {...getNavItemStyle("/arbitrage-hub/nba")}>NBA</MenuButton>
+                <MenuList>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/h2h-spread-total">H2H - Spreads - Totals</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/player-props/points">Player Props - Points</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/player-props/rebounds">Player Props - Rebounds</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/player-props/assists">Player Props - Assists</MenuItem>
+                </MenuList>
+              </Menu>
+
+              <Box height="28px" width="1px" bg="whiteAlpha.600" mx={2} />
+
+              <Menu>
+                <MenuButton as={Button} rightIcon={<HamburgerIcon />} {...getNavItemStyle("/arbitrage-hub/afl")}>AFL</MenuButton>
+                <MenuList>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/afl/h2h-spread-total">H2H - Spreads - Totals</MenuItem>
+                </MenuList>
+              </Menu>
+
+              <Box height="28px" width="1px" bg="whiteAlpha.600" mx={2} />
+
+              <Menu>
+                <MenuButton as={Button} rightIcon={<HamburgerIcon />} {...getNavItemStyle("/arbitrage-hub/nfl")}>NFL</MenuButton>
+                <MenuList>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nfl/h2h-spread-total">H2H - Spreads - Totals</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nfl/player-props/qb">Player Props - QB</MenuItem>
+                </MenuList>
+              </Menu>
             </Flex>
             <Spacer />
             <Flex align="center" gap={4}>
@@ -247,26 +253,13 @@ const App = () => {
       {/* Routes */}
       <Routes>
         <Route path="/arbitrage-hub/" element={<Home />} />
-        <Route
-          path="/arbitrage-hub/h2h-spread-total"
-          element={<H2hSpreadTotal />}
-        />
-        <Route
-          path="/arbitrage-hub/player-props-assists"
-          element={<PlayerPropsAssists />}
-        />
-        <Route
-          path="/arbitrage-hub/player-props-rebounds"
-          element={<PlayerPropsRebounds />}
-        />
-        <Route
-          path="/arbitrage-hub/player-props-points"
-          element={<PlayerPropsPoints />}
-        />
-        <Route
-          path="/arbitrage-hub/h2h-spread-total-afl"
-          element={<H2hSpreadTotalAFL />}
-        />
+        <Route path="/arbitrage-hub/nba/h2h-spread-total" element={<H2hSpreadTotalNBA />} />
+        <Route path="/arbitrage-hub/nba/player-props/assists" element={<PlayerPropsAssistsNBA />} />
+        <Route path="/arbitrage-hub/nba/player-props/rebounds" element={<PlayerPropsReboundsNBA />} />
+        <Route path="/arbitrage-hub/nba/player-props/points" element={<PlayerPropsPointsNBA />} />
+        <Route path="/arbitrage-hub/afl/h2h-spread-total" element={<H2hSpreadTotalAFL />} />
+        <Route path="/arbitrage-hub/nfl/h2h-spread-total" element={<H2hSpreadTotalNFL />} />
+        <Route path="/arbitrage-hub/nfl/player-props/qb" element={<PlayerPropsQBNFL />} />
       </Routes>
     </Box>
   );

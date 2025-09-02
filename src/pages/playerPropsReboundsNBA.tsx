@@ -11,7 +11,7 @@ import {
 import { fetchGameIds, fetchPlayerPropsRebounds, fetchPlayerPropsAlternateRebounds } from '../api';
 import { renderArbitrageRebounds } from '../components/functions/renderArbitrageRebounds';
 
-const PlayerPropsRebounds = () => {
+const PlayerPropsReboundsNBA = () => {
   const [playerProps, setPlayerProps] = useState<any[]>([]);
 
   useEffect(() => {
@@ -26,7 +26,6 @@ const PlayerPropsRebounds = () => {
               fetchPlayerPropsAlternateRebounds(id),
             ]);
 
-            // Merge markets (assumes same structure, same bookmakers array)
             const mergedBookmakers = mainProps.bookmakers.map((bookmaker: any) => {
               const altBookmaker = altProps.bookmakers.find((b: any) => b.key === bookmaker.key);
               const mergedMarkets = [
@@ -160,4 +159,6 @@ const PlayerPropsRebounds = () => {
   );
 };
 
-export default PlayerPropsRebounds;
+export default PlayerPropsReboundsNBA;
+
+

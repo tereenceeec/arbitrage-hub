@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-const API_ODDS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds';
-const API_EVENTS_URL = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events';
+const API_ODDS_URL_NBA = 'https://api.the-odds-api.com/v4/sports/basketball_nba/odds';
+const API_EVENTS_URL_NBA = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events';
+const API_ODDS_URL_NFL = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds';
+const API_EVENTS_URL_NFL = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events';
 const API_ODDS_URL_AFL = 'https://api.the-odds-api.com/v4/sports/aussierules_afl/odds';
 const API_EVENTS_URL_AFL = 'https://api.the-odds-api.com/v4/sports/aussierules_afl/events';
 const API_KEY = [
@@ -43,7 +45,7 @@ const handle401 = async (originalFunction: () => Promise<any>) => {
 
 const fetchOdds = async (markets: string): Promise<any> => {
   try {
-    const response = await axios.get(API_ODDS_URL, {
+    const response = await axios.get(API_ODDS_URL_NBA, {
       params: {
         regions: 'au',
         markets,
@@ -58,9 +60,31 @@ const fetchOdds = async (markets: string): Promise<any> => {
   }
 };
 
-export const fetchH2HOdds = () => fetchOdds('h2h');
-export const fetchSpreadOdds = () => fetchOdds('spreads');
-export const fetchTotalOdds = () => fetchOdds('totals');
+export const fetchNBAH2HOdds = () => fetchOdds('h2h');
+export const fetchNBASpreadOdds = () => fetchOdds('spreads');
+export const fetchNBATotalOdds = () => fetchOdds('totals');
+
+// NFL odds
+const fetchNFLOdds = async (markets: string): Promise<any> => {
+  try {
+    const response = await axios.get(API_ODDS_URL_NFL, {
+      params: {
+        regions: 'au',
+        markets,
+        apiKey: API_KEY[currentKeyIndex],
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(() => fetchNFLOdds(markets));
+    console.error(`Error fetching NFL odds for ${markets}:`, error);
+    throw error;
+  }
+};
+
+export const fetchNFLH2HOdds = () => fetchNFLOdds('h2h');
+export const fetchNFLSpreadOdds = () => fetchNFLOdds('spreads');
+export const fetchNFLTotalOdds = () => fetchNFLOdds('totals');
 
 // Fetch alternate totals market
 export const fetchAlternateTotals = async (eventIds: string[]): Promise<any[]> => {
@@ -108,7 +132,7 @@ export const fetchAlternateSpreads = async (eventIds: string[]): Promise<any[]> 
 // Fetch game IDs
 export const fetchGameIds = async (): Promise<string[]> => {
   try {
-    const response = await axios.get(API_EVENTS_URL, {
+    const response = await axios.get(API_EVENTS_URL_NBA, {
       params: {
         regions: 'au',
         apiKey: API_KEY[currentKeyIndex],
@@ -124,8 +148,68 @@ export const fetchGameIds = async (): Promise<string[]> => {
   }
 };
 
-// Fetch player props (assists, rebounds, points)
-const fetchPlayerProps = async (gameId: string, market: string): Promise<any> => {
+// NFL events and alternates
+export const fetchNFLGameIds = async (): Promise<string[]> => {
+  try {
+    const response = await axios.get(API_EVENTS_URL_NFL, {
+      params: {
+        regions: 'au',
+        apiKey: API_KEY[currentKeyIndex],
+      },
+    });
+    const data = response.data;
+    const ids: string[] = data.map((game: any) => game.id);
+    return ids;
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(fetchNFLGameIds);
+    console.error('Error fetching NFL game IDs:', error);
+    return [];
+  }
+};
+
+export const fetchAlternateNFLTotals = async (eventIds: string[]): Promise<any[]> => {
+  try {
+    const requests = eventIds.map(id =>
+      axios.get(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${id}/odds`, {
+        params: {
+          regions: 'au',
+          markets: 'alternate_totals',
+          apiKey: API_KEY[currentKeyIndex],
+        },
+      })
+    );
+    const responses = await Promise.all(requests);
+    return responses.map(res => res.data);
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(() => fetchAlternateNFLTotals(eventIds));
+    console.error('Error fetching NFL alternate totals:', error);
+    return [];
+  }
+};
+
+export const fetchAlternateNFLSpreads = async (eventIds: string[]): Promise<any[]> => {
+  try {
+    const requests = eventIds.map(id =>
+      axios.get(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${id}/odds`, {
+        params: {
+          regions: 'au',
+          markets: 'alternate_spreads',
+          apiKey: API_KEY[currentKeyIndex],
+        },
+      })
+    );
+    const responses = await Promise.all(requests);
+    return responses.map(res => res.data);
+  } catch (error: any) {
+    if (error.response?.status === 401) return handle401(() => fetchAlternateNFLSpreads(eventIds));
+    console.error('Error fetching NFL alternate spreads:', error);
+    return [];
+  }
+};
+
+// Fetch player props NBA (assists, rebounds, points) with retry on 401/429
+const fetchPlayerPropsNBA = async (gameId: string, market: string, attempt: number = 0): Promise<any> => {
+  const maxAttempts = 4;
   try {
     const res = await fetch(
       `https://api.the-odds-api.com/v4/sports/basketball_nba/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=${market}`
@@ -134,27 +218,90 @@ const fetchPlayerProps = async (gameId: string, market: string): Promise<any> =>
     if (res.status === 401) {
       currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
       console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
-      return fetchPlayerProps(gameId, market);
+      if (attempt + 1 >= maxAttempts) return await res.json();
+      return fetchPlayerPropsNBA(gameId, market, attempt + 1);
+    }
+    if (res.status === 429) {
+      // Rotate key and backoff briefly
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
+      const delayMs = 300 * (attempt + 1);
+      await new Promise((r) => setTimeout(r, delayMs));
+      if (attempt + 1 >= maxAttempts) return await res.json();
+      return fetchPlayerPropsNBA(gameId, market, attempt + 1);
     }
 
     return await res.json();
   } catch (error) {
+    if (attempt + 1 < maxAttempts) {
+      await new Promise((r) => setTimeout(r, 200 * (attempt + 1)));
+      return fetchPlayerPropsNBA(gameId, market, attempt + 1);
+    }
     console.error(`Error fetching player props for ${market}:`, error);
     throw error;
   }
 };
 
-export const fetchPlayerPropsAssists = (gameId: string) => fetchPlayerProps(gameId, 'player_assists');
+export const fetchPlayerPropsAssists = (gameId: string) => fetchPlayerPropsNBA(gameId, 'player_assists');
 export const fetchPlayerPropsAlternateAssists = (gameId: string) =>
-  fetchPlayerProps(gameId, 'player_assists_alternate');
+  fetchPlayerPropsNBA(gameId, 'player_assists_alternate');
 
-export const fetchPlayerPropsRebounds = (gameId: string) => fetchPlayerProps(gameId, 'player_rebounds');
+export const fetchPlayerPropsRebounds = (gameId: string) => fetchPlayerPropsNBA(gameId, 'player_rebounds');
 export const fetchPlayerPropsAlternateRebounds = (gameId: string) =>
-  fetchPlayerProps(gameId, 'player_rebounds_alternate');
+  fetchPlayerPropsNBA(gameId, 'player_rebounds_alternate');
 
-export const fetchPlayerPropsPoints = (gameId: string) => fetchPlayerProps(gameId, 'player_points');
+export const fetchPlayerPropsPoints = (gameId: string) => fetchPlayerPropsNBA(gameId, 'player_points');
 export const fetchPlayerPropsAlternatePoints = (gameId: string) =>
-  fetchPlayerProps(gameId, 'player_points_alternate');
+  fetchPlayerPropsNBA(gameId, 'player_points_alternate');
+
+// Fetch player props NFL with retry on 401/429
+const fetchPlayerPropsNFL = async (gameId: string, market: string, attempt: number = 0): Promise<any> => {
+  const maxAttempts = 4;
+  try {
+    const res = await fetch(
+      `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${gameId}/odds?apiKey=${API_KEY[currentKeyIndex]}&regions=au&markets=${market}`
+    );
+
+    if (res.status === 401) {
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
+      console.warn(`API key ${API_KEY[currentKeyIndex]} unauthorized. Switching to next key.`);
+      if (attempt + 1 >= maxAttempts) return await res.json();
+      return fetchPlayerPropsNFL(gameId, market, attempt + 1);
+    }
+    if (res.status === 429) {
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEY.length;
+      const delayMs = 300 * (attempt + 1);
+      await new Promise((r) => setTimeout(r, delayMs));
+      if (attempt + 1 >= maxAttempts) return await res.json();
+      return fetchPlayerPropsNFL(gameId, market, attempt + 1);
+    }
+
+    return await res.json();
+  } catch (error) {
+    if (attempt + 1 < maxAttempts) {
+      await new Promise((r) => setTimeout(r, 200 * (attempt + 1)));
+      return fetchPlayerPropsNFL(gameId, market, attempt + 1);
+    }
+    console.error(`Error fetching NFL player props for ${market}:`, error);
+    throw error;
+  }
+};
+
+export const fetchNFLPlayerPropsPoints = (gameId: string) => fetchPlayerPropsNFL(gameId, 'player_points');
+export const fetchNFLPlayerPropsAlternatePoints = (gameId: string) =>
+  fetchPlayerPropsNFL(gameId, 'player_points_alternate');
+
+export const fetchNFLPlayerPropsRebounds = (gameId: string) => fetchPlayerPropsNFL(gameId, 'player_rebounds');
+export const fetchNFLPlayerPropsAlternateRebounds = (gameId: string) =>
+  fetchPlayerPropsNFL(gameId, 'player_rebounds_alternate');
+
+export const fetchNFLPlayerPropsAssists = (gameId: string) => fetchPlayerPropsNFL(gameId, 'player_assists');
+export const fetchNFLPlayerPropsAlternateAssists = (gameId: string) =>
+  fetchPlayerPropsNFL(gameId, 'player_assists_alternate');
+
+// NFL QB markets
+export const fetchNFLPlayerPropsPassYds = (gameId: string) => fetchPlayerPropsNFL(gameId, 'player_pass_yds');
+
+export const fetchNFLPlayerPropsPassTds = (gameId: string) => fetchPlayerPropsNFL(gameId, 'player_pass_tds');
 
 
 

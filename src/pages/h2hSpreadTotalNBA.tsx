@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  fetchH2HOdds,
-  fetchSpreadOdds,
+  fetchNBAH2HOdds,
+  fetchNBASpreadOdds,
   fetchGameIds,
-  fetchTotalOdds,
+  fetchNBATotalOdds,
   fetchAlternateTotals,
   fetchAlternateSpreads,
 } from '../api';
@@ -12,7 +12,7 @@ import { renderArbitrageBets, Game } from '../components/functions/renderArbitra
 import { renderOdds } from '../components/functions/renderOdds';
 import { Box, Heading, Divider, Flex, Grid } from '@chakra-ui/react';
 
-const H2hSpreadTotal = () => {
+const H2hSpreadTotalNBA = () => {
   const [h2hOdds, setH2HOdds] = useState<Game[]>([]);
   const [spreadOdds, setSpreadOdds] = useState<Game[]>([]);
   const [totalOdds, setTotalOdds] = useState<Game[]>([]);
@@ -22,9 +22,9 @@ const H2hSpreadTotal = () => {
   useEffect(() => {
     const getOdds = async () => {
       try {
-        const h2hData = await fetchH2HOdds();
-        const spreadData = await fetchSpreadOdds();
-        const totalData = await fetchTotalOdds(); // Regular totals
+        const h2hData = await fetchNBAH2HOdds();
+        const spreadData = await fetchNBASpreadOdds();
+        const totalData = await fetchNBATotalOdds(); // Regular totals
         const eventIds = await fetchGameIds();
         const altTotalsData = await fetchAlternateTotals(eventIds); // Alternate totals
         const altSpreadsData = await fetchAlternateSpreads(eventIds); // Alternate spreads
@@ -178,4 +178,4 @@ const H2hSpreadTotal = () => {
   );
 };
 
-export default H2hSpreadTotal;
+export default H2hSpreadTotalNBA;

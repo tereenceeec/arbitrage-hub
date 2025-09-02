@@ -1,67 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Heading,
-  Text,
   Grid,
   GridItem,
+  Heading,
+  Text,
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { fetchGameIds, fetchPlayerPropsPoints, fetchPlayerPropsAlternatePoints } from '../api';
-import { renderArbitragePoints } from '../components/functions/renderArbitragePoints';
+import { fetchGameIds, fetchPlayerPropsAlternateAssists, fetchPlayerPropsAssists } from '../api';
+import { renderArbitrageAssists } from '../components/functions/renderArbitrageAssists';
 
-const PlayerPropsPoints = () => {
+const PlayerPropsAssistsNBA = () => {
   const [playerProps, setPlayerProps] = useState<any[]>([]);
 
   useEffect(() => {
-    const loadPlayerProps = async () => {
-      try {
-        const ids = await fetchGameIds();
+      const loadPlayerProps = async () => {
+        try {
+          const ids = await fetchGameIds();
   
-        const combinedGames = await Promise.all(
-          ids.map(async (id) => {
-            const [mainProps, altProps] = await Promise.all([
-              fetchPlayerPropsPoints(id),
-              fetchPlayerPropsAlternatePoints(id),
-            ]);
+          const combinedGames = await Promise.all(
+            ids.map(async (id) => {
+              const [mainProps, altProps] = await Promise.all([
+                fetchPlayerPropsAssists(id),
+                fetchPlayerPropsAlternateAssists(id),
+              ]);
   
-            // Merge markets (assumes same structure, same bookmakers array)
-            const mergedBookmakers = mainProps.bookmakers.map((bookmaker: any) => {
-              const altBookmaker = altProps.bookmakers.find((b: any) => b.key === bookmaker.key);
-              const mergedMarkets = [
-                ...(bookmaker.markets || []),
-                ...(altBookmaker?.markets || []),
-              ];
+              const mergedBookmakers = mainProps.bookmakers.map((bookmaker: any) => {
+                const altBookmaker = altProps.bookmakers.find((b: any) => b.key === bookmaker.key);
+                const mergedMarkets = [
+                  ...(bookmaker.markets || []),
+                  ...(altBookmaker?.markets || []),
+                ];
+                return {
+                  ...bookmaker,
+                  markets: mergedMarkets,
+                };
+              });
+  
               return {
-                ...bookmaker,
-                markets: mergedMarkets,
+                ...mainProps,
+                bookmakers: mergedBookmakers,
               };
-            });
+            })
+          );
   
-            return {
-              ...mainProps,
-              bookmakers: mergedBookmakers,
-            };
-          })
-        );
+          setPlayerProps(combinedGames);
+        } catch (error) {
+          console.error('Failed to fetch player props:', error);
+        }
+      };
   
-        setPlayerProps(combinedGames);
-      } catch (error) {
-        console.error('Failed to fetch player props:', error);
-      }
-    };
-  
-    loadPlayerProps();
-  }, []);
-  
+      loadPlayerProps();
+    }, []);
 
   const renderPlayerProps = (game: any) => {
     const playerData: { [key: string]: any } = {};
 
     game.bookmakers?.forEach((bookmaker: any) => {
       bookmaker.markets.forEach((market: any) => {
-        if (market.key === 'player_points') {
+        if (market.key === 'player_assists') {
           market.outcomes.forEach((outcome: any) => {
             if (!playerData[outcome.description]) {
               playerData[outcome.description] = {};
@@ -101,10 +99,10 @@ const PlayerPropsPoints = () => {
             </Text>
             <Box pl={5}>
               <Text mb={2} fontSize="sm">
-                <strong>Over:</strong> {playerData[playerName][bookmakerName].over?.price} (Points: {playerData[playerName][bookmakerName].over?.points})
+                <strong>Over:</strong> {playerData[playerName][bookmakerName].over?.price} (Assists: {playerData[playerName][bookmakerName].over?.points})
               </Text>
               <Text fontSize="sm">
-                <strong>Under:</strong> {playerData[playerName][bookmakerName].under?.price} (Points: {playerData[playerName][bookmakerName].under?.points})
+                <strong>Under:</strong> {playerData[playerName][bookmakerName].under?.price} (Assists: {playerData[playerName][bookmakerName].under?.points})
               </Text>
             </Box>
           </Box>
@@ -117,15 +115,15 @@ const PlayerPropsPoints = () => {
 
   return (
     <Box p={4}>
-      <Heading mb={4}>Player Props - Points</Heading>
+      <Heading mb={4}>Player Props - Assists</Heading>
 
       <Heading size="md" mb={2}>
         Arbitrage
       </Heading>
 
       <Grid templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)' }} gap={4} mb={6}>
-        {renderArbitragePoints(playerProps) ? (
-          renderArbitragePoints(playerProps)
+        {renderArbitrageAssists(playerProps) ? (
+          renderArbitrageAssists(playerProps)
         ) : (
           <Text>No arbitrage opportunities found.</Text>
         )}
@@ -161,4 +159,6 @@ const PlayerPropsPoints = () => {
   );
 };
 
-export default PlayerPropsPoints;
+export default PlayerPropsAssistsNBA;
+
+
