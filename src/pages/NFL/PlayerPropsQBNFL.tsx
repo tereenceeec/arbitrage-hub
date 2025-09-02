@@ -87,11 +87,12 @@ const PlayerPropsQBNFL = () => {
 
   const bgColor = useColorModeValue('gray.50', 'gray.700');
 
+  // Local arbitrage for QB markets
   const renderArbForMarket = (games: any[], marketKey: string) => {
     const cards: { jsx: React.ReactNode; profit: number }[] = [];
     const seen = new Set<string>();
 
-    const calcProb = (odds: number) => 2 / odds;
+    const calcProb = (odds: number) => 1 / odds;
     const isArb = (over: number, under: number) => calcProb(over) + calcProb(under) < 1;
 
     games.forEach((game) => {
@@ -213,5 +214,3 @@ const PlayerPropsQBNFL = () => {
 };
 
 export default PlayerPropsQBNFL;
-
-

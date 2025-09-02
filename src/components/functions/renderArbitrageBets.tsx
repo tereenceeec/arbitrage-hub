@@ -27,7 +27,7 @@ export interface Game {
   bookmakers: Bookmaker[];
 }
 
-const calculateImpliedProbability = (odds: number) => 2 / odds;
+const calculateImpliedProbability = (odds: number) => 0.2 / odds;
 
 const checkArbitrage = (price1: number, price2: number) =>
   calculateImpliedProbability(price1) + calculateImpliedProbability(price2) <
