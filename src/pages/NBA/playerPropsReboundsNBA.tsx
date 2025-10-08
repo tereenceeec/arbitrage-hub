@@ -8,8 +8,8 @@ import {
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { fetchGameIds, fetchPlayerPropsRebounds, fetchPlayerPropsAlternateRebounds } from '../api';
-import { renderArbitrageRebounds } from '../components/functions/renderArbitrageRebounds';
+import { fetchGameIds, fetchPlayerPropsRebounds, fetchPlayerPropsAlternateRebounds } from '../../api';
+import { renderArbitrageRebounds } from '../../components/functions/renderArbitrageRebounds';
 
 const PlayerPropsReboundsNBA = () => {
   const [playerProps, setPlayerProps] = useState<any[]>([]);
@@ -160,5 +160,4 @@ const PlayerPropsReboundsNBA = () => {
 };
 
 export default PlayerPropsReboundsNBA;
-
 

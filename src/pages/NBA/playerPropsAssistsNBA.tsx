@@ -8,8 +8,8 @@ import {
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { fetchGameIds, fetchPlayerPropsAlternateAssists, fetchPlayerPropsAssists } from '../api';
-import { renderArbitrageAssists } from '../components/functions/renderArbitrageAssists';
+import { fetchGameIds, fetchPlayerPropsAlternateAssists, fetchPlayerPropsAssists } from '../../api';
+import { renderArbitrageAssists } from '../../components/functions/renderArbitrageAssists';
 
 const PlayerPropsAssistsNBA = () => {
   const [playerProps, setPlayerProps] = useState<any[]>([]);
@@ -160,5 +160,4 @@ const PlayerPropsAssistsNBA = () => {
 };
 
 export default PlayerPropsAssistsNBA;
-
 

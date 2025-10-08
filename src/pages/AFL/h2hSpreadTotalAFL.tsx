@@ -6,13 +6,13 @@ import {
   fetchH2HAFLOdds,
   fetchSpreadAFLOdds,
   fetchTotalAFLOdds,
-} from "../api";
+} from "../../api";
 
 import {
   renderArbitrageBets,
   Game,
-} from "../components/functions/renderArbitrageBets";
-import { renderOdds } from "../components/functions/renderOdds";
+} from "../../components/functions/renderArbitrageBets";
+import { renderOdds } from "../../components/functions/renderOdds";
 import { Box, Heading, Divider, Flex, Grid } from "@chakra-ui/react";
 
 const H2hSpreadTotalAFL = () => {
@@ -162,3 +162,4 @@ const H2hSpreadTotalAFL = () => {
 };
 
 export default H2hSpreadTotalAFL;
+

@@ -26,7 +26,7 @@ const Home = () => {
 
     if (showWelcome === 'true' && username === 'davidc') {
       toast({
-        title: 'A wild nigga appeared!',
+        title: 'A wild fat man has appeared!',
         status: 'success',
         duration: 4000,
         isClosable: true,
