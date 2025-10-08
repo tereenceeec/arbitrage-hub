@@ -44,6 +44,11 @@ To get started with this project, follow these steps:
    npm start
    ```
 
+5. Deploy to GitHub Pages:
+   ```
+   npm run deploy-docs
+   ```
+
 ## Built With
 
 - React
