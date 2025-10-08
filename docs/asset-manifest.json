@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/arbitrage-hub/static/js/main.fd5d3da5.js",
+    "main.js": "/arbitrage-hub/static/js/main.d72de1b0.js",
     "index.html": "/arbitrage-hub/index.html",
-    "main.fd5d3da5.js.map": "/arbitrage-hub/static/js/main.fd5d3da5.js.map"
+    "main.d72de1b0.js.map": "/arbitrage-hub/static/js/main.d72de1b0.js.map"
   },
   "entrypoints": [
-    "static/js/main.fd5d3da5.js"
+    "static/js/main.d72de1b0.js"
   ]
 }
