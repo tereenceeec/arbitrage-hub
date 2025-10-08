@@ -26,7 +26,9 @@ import {
 import { HamburgerIcon } from "@chakra-ui/icons";
 import Home from "../pages/Home";
 import PlayerPropsAssistsNBA from "../pages/NBA/playerPropsAssistsNBA";
-import H2hSpreadTotalNBA from "../pages/NBA/h2hSpreadTotalNBA";
+import H2HNBA from "../pages/NBA/h2hNBA";
+import SpreadsNBA from "../pages/NBA/spreadsNBA";
+import TotalsNBA from "../pages/NBA/totalsNBA";
 import PlayerPropsReboundsNBA from "../pages/NBA/playerPropsReboundsNBA";
 import PlayerPropsPointsNBA from "../pages/NBA/playerPropsPointsNBA";
 import Login from "./ui/login";
@@ -69,7 +71,9 @@ const App = () => {
   };
 
   const navNBAItems = [
-    { name: "H2H - Spreads - Totals", path: "/arbitrage-hub/nba/h2h-spread-total" },
+    { name: "H2H", path: "/arbitrage-hub/nba/h2h" },
+    { name: "Spreads", path: "/arbitrage-hub/nba/spreads" },
+    { name: "Totals", path: "/arbitrage-hub/nba/totals" },
     { name: "Player Props - Points", path: "/arbitrage-hub/nba/player-props/points" },
     { name: "Player Props - Rebounds", path: "/arbitrage-hub/nba/player-props/rebounds" },
     { name: "Player Props - Assists", path: "/arbitrage-hub/nba/player-props/assists" },
@@ -209,7 +213,9 @@ const App = () => {
               <Menu>
                 <MenuButton as={Button} rightIcon={<HamburgerIcon />} {...getNavItemStyle("/arbitrage-hub/nba")}>NBA</MenuButton>
                 <MenuList>
-                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/h2h-spread-total">H2H - Spreads - Totals</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/h2h">H2H</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/spreads">Spreads</MenuItem>
+                  <MenuItem as={RouterLink} to="/arbitrage-hub/nba/totals">Totals</MenuItem>
                   <MenuItem as={RouterLink} to="/arbitrage-hub/nba/player-props/points">Player Props - Points</MenuItem>
                   <MenuItem as={RouterLink} to="/arbitrage-hub/nba/player-props/rebounds">Player Props - Rebounds</MenuItem>
                   <MenuItem as={RouterLink} to="/arbitrage-hub/nba/player-props/assists">Player Props - Assists</MenuItem>
@@ -266,7 +272,9 @@ const App = () => {
       {/* Routes */}
       <Routes>
         <Route path="/arbitrage-hub/" element={<Home />} />
-        <Route path="/arbitrage-hub/nba/h2h-spread-total" element={<H2hSpreadTotalNBA />} />
+        <Route path="/arbitrage-hub/nba/h2h" element={<H2HNBA />} />
+        <Route path="/arbitrage-hub/nba/spreads" element={<SpreadsNBA />} />
+        <Route path="/arbitrage-hub/nba/totals" element={<TotalsNBA />} />
         <Route path="/arbitrage-hub/nba/player-props/assists" element={<PlayerPropsAssistsNBA />} />
         <Route path="/arbitrage-hub/nba/player-props/rebounds" element={<PlayerPropsReboundsNBA />} />
         <Route path="/arbitrage-hub/nba/player-props/points" element={<PlayerPropsPointsNBA />} />

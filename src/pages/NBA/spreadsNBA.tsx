@@ -19,12 +19,12 @@ import {
   TableContainer,
   useColorModeValue
 } from '@chakra-ui/react';
-import { fetchNFLTotalOdds, fetchNFLGameIds, fetchAlternateNFLTotals } from '../../api';
+import { fetchNBASpreadOdds, fetchGameIds, fetchAlternateSpreads } from '../../api';
 import { renderArbitrageBets, Game } from '../../components/functions/renderArbitrageBets';
 
 // Separate component for arbitrage section to avoid hook order issues
-const ArbitrageSection = ({ totalOdds }: { totalOdds: Game[] }) => {
-  const arbitrage = renderArbitrageBets(totalOdds, 'totals');
+const ArbitrageSection = ({ spreadOdds }: { spreadOdds: Game[] }) => {
+  const arbitrage = renderArbitrageBets(spreadOdds, 'spreads');
   
   if (arbitrage.length === 0) {
     return (
@@ -51,8 +51,8 @@ const ArbitrageSection = ({ totalOdds }: { totalOdds: Game[] }) => {
 };
 
 // Separate component for arbitrage badge to avoid hook order issues
-const ArbitrageBadge = ({ totalOdds }: { totalOdds: Game[] }) => {
-  const arbitrage = renderArbitrageBets(totalOdds, 'totals');
+const ArbitrageBadge = ({ spreadOdds }: { spreadOdds: Game[] }) => {
+  const arbitrage = renderArbitrageBets(spreadOdds, 'spreads');
   
   return arbitrage.length > 0 ? (
     <Badge colorScheme="green" variant="subtle" size="sm">
@@ -68,10 +68,10 @@ const ArbitrageBadge = ({ totalOdds }: { totalOdds: Game[] }) => {
 interface GameState {
   game: Game;
   oddsLoaded: boolean;
-  totalOdds: Game[];
+  spreadOdds: Game[];
 }
 
-const TotalsNFL = () => {
+const SpreadsNBA = () => {
   const [games, setGames] = useState<GameState[]>([]);
   const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,18 +82,18 @@ const TotalsNFL = () => {
     const loadGames = async () => {
       try {
         setLoading(true);
-        const data = await fetchNFLTotalOdds();
+        const data = await fetchNBASpreadOdds();
         
         // Initialize games without loading odds
         const initialGames: GameState[] = data.map((game: Game) => ({
           game,
           oddsLoaded: false,
-          totalOdds: []
+          spreadOdds: []
         }));
         
         setGames(initialGames);
       } catch (e) {
-        console.error('Failed to fetch NFL games:', e);
+        console.error('Failed to fetch NBA games:', e);
       } finally {
         setLoading(false);
       }
@@ -108,12 +108,12 @@ const TotalsNFL = () => {
     if (!gameState.oddsLoaded) {
       // Load odds for this specific game
       try {
-        const totalData = await fetchNFLTotalOdds();
-        const eventIds = await fetchNFLGameIds();
-        const altTotals = await fetchAlternateNFLTotals(eventIds);
-        const allTotals = [...totalData, ...altTotals];
+        const spreadData = await fetchNBASpreadOdds();
+        const eventIds = await fetchGameIds();
+        const altSpreads = await fetchAlternateSpreads(eventIds);
+        const allSpreads = [...spreadData, ...altSpreads];
         
-        const gameOdds = allTotals.filter((g: Game) => 
+        const gameOdds = allSpreads.filter((g: Game) => 
           g.home_team === gameState.game.home_team && 
           g.away_team === gameState.game.away_team
         );
@@ -123,7 +123,7 @@ const TotalsNFL = () => {
           newGames[index] = {
             ...gameState,
             oddsLoaded: true,
-            totalOdds: gameOdds
+            spreadOdds: gameOdds
           };
           return newGames;
         });
@@ -137,7 +137,7 @@ const TotalsNFL = () => {
     return (
       <Box w="100%" p={4} textAlign="center">
         <Spinner size="xl" color="teal.500" />
-        <Text mt={4}>Loading NFL games...</Text>
+        <Text mt={4}>Loading NBA games...</Text>
       </Box>
     );
   }
@@ -147,7 +147,7 @@ const TotalsNFL = () => {
   return (
     <Box w="100%" p={4}>
       <Heading as="h1" size="lg" mb={6} color="teal.800">
-        NFL Totals
+        NBA Spreads
       </Heading>
       
       <Flex gap={6} h="calc(100vh - 200px)">
@@ -181,7 +181,7 @@ const TotalsNFL = () => {
                       <Badge colorScheme="blue" variant="subtle" size="sm">
                         Odds Loaded
                       </Badge>
-                      <ArbitrageBadge totalOdds={gameState.totalOdds} />
+                      <ArbitrageBadge spreadOdds={gameState.spreadOdds} />
                     </HStack>
                   )}
                 </VStack>
@@ -208,56 +208,56 @@ const TotalsNFL = () => {
                 ) : (
                   <VStack spacing={6} align="stretch">
                     {/* Arbitrage Section */}
-                    <ArbitrageSection totalOdds={selectedGame.totalOdds} />
+                    <ArbitrageSection spreadOdds={selectedGame.spreadOdds} />
 
-                    {/* Total Odds Table */}
+                    {/* Spread Odds Table */}
                     <Box>
                       <Heading size="sm" mb={3} color="teal.700">
-                        Total Odds
+                        Spread Odds
                       </Heading>
                       <TableContainer>
                         <Table size="sm" variant="simple">
                           <Thead>
                             <Tr>
                               <Th>Bookmaker</Th>
-                              <Th textAlign="center">Over</Th>
-                              <Th textAlign="center">Under</Th>
+                              <Th textAlign="center">Home Spread</Th>
+                              <Th textAlign="center">Away Spread</Th>
                             </Tr>
                           </Thead>
                           <Tbody>
-                            {selectedGame.totalOdds.map(game => 
+                            {selectedGame.spreadOdds.map(game => 
                               game.bookmakers.map(bookmaker => {
-                                const market = bookmaker.markets?.find(m => m.key === 'totals');
+                                const market = bookmaker.markets?.find(m => m.key === 'spreads');
                                 if (!market) return null;
                                 
-                                const overOutcome = market.outcomes.find(o => o.name === 'Over');
-                                const underOutcome = market.outcomes.find(o => o.name === 'Under');
+                                const homeOutcome = market.outcomes.find(o => o.name === 'Home' || o.name === game.home_team);
+                                const awayOutcome = market.outcomes.find(o => o.name === 'Away' || o.name === game.away_team);
                                 
                                 return (
                                   <Tr key={bookmaker.key}>
                                     <Td fontWeight="semibold" color="blue.600">
                                       {bookmaker.title}
                                     </Td>
-                                    <Td isNumeric>
-                                      {overOutcome ? (
+                                    <Td >
+                                      {homeOutcome ? (
                                         <VStack spacing={1}>
                                           <Badge colorScheme="blue" variant="outline">
-                                            {overOutcome.point}
+                                            {homeOutcome.point}
                                           </Badge>
                                           <Badge colorScheme="green" variant="outline">
-                                            {overOutcome.price}
+                                            {homeOutcome.price}
                                           </Badge>
                                         </VStack>
                                       ) : '-'}
                                     </Td>
-                                    <Td isNumeric>
-                                      {underOutcome ? (
+                                    <Td >
+                                      {awayOutcome ? (
                                         <VStack spacing={1}>
                                           <Badge colorScheme="blue" variant="outline">
-                                            {underOutcome.point}
+                                            {awayOutcome.point}
                                           </Badge>
                                           <Badge colorScheme="green" variant="outline">
-                                            {underOutcome.price}
+                                            {awayOutcome.price}
                                           </Badge>
                                         </VStack>
                                       ) : '-'}
@@ -288,5 +288,4 @@ const TotalsNFL = () => {
   );
 };
 
-export default TotalsNFL;
-
+export default SpreadsNBA;

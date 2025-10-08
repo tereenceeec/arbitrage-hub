@@ -19,7 +19,7 @@ import {
   TableContainer,
   useColorModeValue
 } from '@chakra-ui/react';
-import { fetchNFLTotalOdds, fetchNFLGameIds, fetchAlternateNFLTotals } from '../../api';
+import { fetchNBATotalOdds, fetchGameIds, fetchAlternateTotals } from '../../api';
 import { renderArbitrageBets, Game } from '../../components/functions/renderArbitrageBets';
 
 // Separate component for arbitrage section to avoid hook order issues
@@ -71,7 +71,7 @@ interface GameState {
   totalOdds: Game[];
 }
 
-const TotalsNFL = () => {
+const TotalsNBA = () => {
   const [games, setGames] = useState<GameState[]>([]);
   const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,7 +82,7 @@ const TotalsNFL = () => {
     const loadGames = async () => {
       try {
         setLoading(true);
-        const data = await fetchNFLTotalOdds();
+        const data = await fetchNBATotalOdds();
         
         // Initialize games without loading odds
         const initialGames: GameState[] = data.map((game: Game) => ({
@@ -93,7 +93,7 @@ const TotalsNFL = () => {
         
         setGames(initialGames);
       } catch (e) {
-        console.error('Failed to fetch NFL games:', e);
+        console.error('Failed to fetch NBA games:', e);
       } finally {
         setLoading(false);
       }
@@ -108,9 +108,9 @@ const TotalsNFL = () => {
     if (!gameState.oddsLoaded) {
       // Load odds for this specific game
       try {
-        const totalData = await fetchNFLTotalOdds();
-        const eventIds = await fetchNFLGameIds();
-        const altTotals = await fetchAlternateNFLTotals(eventIds);
+        const totalData = await fetchNBATotalOdds();
+        const eventIds = await fetchGameIds();
+        const altTotals = await fetchAlternateTotals(eventIds);
         const allTotals = [...totalData, ...altTotals];
         
         const gameOdds = allTotals.filter((g: Game) => 
@@ -137,7 +137,7 @@ const TotalsNFL = () => {
     return (
       <Box w="100%" p={4} textAlign="center">
         <Spinner size="xl" color="teal.500" />
-        <Text mt={4}>Loading NFL games...</Text>
+        <Text mt={4}>Loading NBA games...</Text>
       </Box>
     );
   }
@@ -147,7 +147,7 @@ const TotalsNFL = () => {
   return (
     <Box w="100%" p={4}>
       <Heading as="h1" size="lg" mb={6} color="teal.800">
-        NFL Totals
+        NBA Totals
       </Heading>
       
       <Flex gap={6} h="calc(100vh - 200px)">
@@ -288,5 +288,4 @@ const TotalsNFL = () => {
   );
 };
 
-export default TotalsNFL;
-
+export default TotalsNBA;

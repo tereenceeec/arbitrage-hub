@@ -19,12 +19,12 @@ import {
   TableContainer,
   useColorModeValue
 } from '@chakra-ui/react';
-import { fetchNFLTotalOdds, fetchNFLGameIds, fetchAlternateNFLTotals } from '../../api';
+import { fetchNBAH2HOdds } from '../../api';
 import { renderArbitrageBets, Game } from '../../components/functions/renderArbitrageBets';
 
 // Separate component for arbitrage section to avoid hook order issues
-const ArbitrageSection = ({ totalOdds }: { totalOdds: Game[] }) => {
-  const arbitrage = renderArbitrageBets(totalOdds, 'totals');
+const ArbitrageSection = ({ h2hOdds }: { h2hOdds: Game[] }) => {
+  const arbitrage = renderArbitrageBets(h2hOdds, 'h2h');
   
   if (arbitrage.length === 0) {
     return (
@@ -51,8 +51,8 @@ const ArbitrageSection = ({ totalOdds }: { totalOdds: Game[] }) => {
 };
 
 // Separate component for arbitrage badge to avoid hook order issues
-const ArbitrageBadge = ({ totalOdds }: { totalOdds: Game[] }) => {
-  const arbitrage = renderArbitrageBets(totalOdds, 'totals');
+const ArbitrageBadge = ({ h2hOdds }: { h2hOdds: Game[] }) => {
+  const arbitrage = renderArbitrageBets(h2hOdds, 'h2h');
   
   return arbitrage.length > 0 ? (
     <Badge colorScheme="green" variant="subtle" size="sm">
@@ -68,10 +68,10 @@ const ArbitrageBadge = ({ totalOdds }: { totalOdds: Game[] }) => {
 interface GameState {
   game: Game;
   oddsLoaded: boolean;
-  totalOdds: Game[];
+  h2hOdds: Game[];
 }
 
-const TotalsNFL = () => {
+const H2HNBA = () => {
   const [games, setGames] = useState<GameState[]>([]);
   const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,18 +82,18 @@ const TotalsNFL = () => {
     const loadGames = async () => {
       try {
         setLoading(true);
-        const data = await fetchNFLTotalOdds();
+        const data = await fetchNBAH2HOdds();
         
         // Initialize games without loading odds
         const initialGames: GameState[] = data.map((game: Game) => ({
           game,
           oddsLoaded: false,
-          totalOdds: []
+          h2hOdds: []
         }));
         
         setGames(initialGames);
       } catch (e) {
-        console.error('Failed to fetch NFL games:', e);
+        console.error('Failed to fetch NBA games:', e);
       } finally {
         setLoading(false);
       }
@@ -108,12 +108,8 @@ const TotalsNFL = () => {
     if (!gameState.oddsLoaded) {
       // Load odds for this specific game
       try {
-        const totalData = await fetchNFLTotalOdds();
-        const eventIds = await fetchNFLGameIds();
-        const altTotals = await fetchAlternateNFLTotals(eventIds);
-        const allTotals = [...totalData, ...altTotals];
-        
-        const gameOdds = allTotals.filter((g: Game) => 
+        const h2hData = await fetchNBAH2HOdds();
+        const gameOdds = h2hData.filter((g: Game) => 
           g.home_team === gameState.game.home_team && 
           g.away_team === gameState.game.away_team
         );
@@ -123,7 +119,7 @@ const TotalsNFL = () => {
           newGames[index] = {
             ...gameState,
             oddsLoaded: true,
-            totalOdds: gameOdds
+            h2hOdds: gameOdds
           };
           return newGames;
         });
@@ -137,7 +133,7 @@ const TotalsNFL = () => {
     return (
       <Box w="100%" p={4} textAlign="center">
         <Spinner size="xl" color="teal.500" />
-        <Text mt={4}>Loading NFL games...</Text>
+        <Text mt={4}>Loading NBA games...</Text>
       </Box>
     );
   }
@@ -147,7 +143,7 @@ const TotalsNFL = () => {
   return (
     <Box w="100%" p={4}>
       <Heading as="h1" size="lg" mb={6} color="teal.800">
-        NFL Totals
+        NBA Head-to-Head
       </Heading>
       
       <Flex gap={6} h="calc(100vh - 200px)">
@@ -181,7 +177,7 @@ const TotalsNFL = () => {
                       <Badge colorScheme="blue" variant="subtle" size="sm">
                         Odds Loaded
                       </Badge>
-                      <ArbitrageBadge totalOdds={gameState.totalOdds} />
+                      <ArbitrageBadge h2hOdds={gameState.h2hOdds} />
                     </HStack>
                   )}
                 </VStack>
@@ -208,30 +204,30 @@ const TotalsNFL = () => {
                 ) : (
                   <VStack spacing={6} align="stretch">
                     {/* Arbitrage Section */}
-                    <ArbitrageSection totalOdds={selectedGame.totalOdds} />
+                    <ArbitrageSection h2hOdds={selectedGame.h2hOdds} />
 
-                    {/* Total Odds Table */}
+                    {/* H2H Odds Table */}
                     <Box>
                       <Heading size="sm" mb={3} color="teal.700">
-                        Total Odds
+                        Head-to-Head Odds
                       </Heading>
                       <TableContainer>
                         <Table size="sm" variant="simple">
                           <Thead>
                             <Tr>
                               <Th>Bookmaker</Th>
-                              <Th textAlign="center">Over</Th>
-                              <Th textAlign="center">Under</Th>
+                              <Th isNumeric>Home</Th>
+                              <Th isNumeric>Away</Th>
                             </Tr>
                           </Thead>
                           <Tbody>
-                            {selectedGame.totalOdds.map(game => 
+                            {selectedGame.h2hOdds.map(game => 
                               game.bookmakers.map(bookmaker => {
-                                const market = bookmaker.markets?.find(m => m.key === 'totals');
+                                const market = bookmaker.markets?.find(m => m.key === 'h2h');
                                 if (!market) return null;
                                 
-                                const overOutcome = market.outcomes.find(o => o.name === 'Over');
-                                const underOutcome = market.outcomes.find(o => o.name === 'Under');
+                                const homeOutcome = market.outcomes.find(o => o.name === 'Home' || o.name === game.home_team);
+                                const awayOutcome = market.outcomes.find(o => o.name === 'Away' || o.name === game.away_team);
                                 
                                 return (
                                   <Tr key={bookmaker.key}>
@@ -239,27 +235,17 @@ const TotalsNFL = () => {
                                       {bookmaker.title}
                                     </Td>
                                     <Td isNumeric>
-                                      {overOutcome ? (
-                                        <VStack spacing={1}>
-                                          <Badge colorScheme="blue" variant="outline">
-                                            {overOutcome.point}
-                                          </Badge>
-                                          <Badge colorScheme="green" variant="outline">
-                                            {overOutcome.price}
-                                          </Badge>
-                                        </VStack>
+                                      {homeOutcome ? (
+                                        <Badge colorScheme="blue" variant="outline">
+                                          {homeOutcome.price}
+                                        </Badge>
                                       ) : '-'}
                                     </Td>
                                     <Td isNumeric>
-                                      {underOutcome ? (
-                                        <VStack spacing={1}>
-                                          <Badge colorScheme="blue" variant="outline">
-                                            {underOutcome.point}
-                                          </Badge>
-                                          <Badge colorScheme="green" variant="outline">
-                                            {underOutcome.price}
-                                          </Badge>
-                                        </VStack>
+                                      {awayOutcome ? (
+                                        <Badge colorScheme="blue" variant="outline">
+                                          {awayOutcome.price}
+                                        </Badge>
                                       ) : '-'}
                                     </Td>
                                   </Tr>
@@ -288,5 +274,4 @@ const TotalsNFL = () => {
   );
 };
 
-export default TotalsNFL;
-
+export default H2HNBA;
